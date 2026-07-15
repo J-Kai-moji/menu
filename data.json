@@ -68,7 +68,7 @@
   {"id":"d067","name":"桑拿鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
   {"id":"d068","name":"烤棒骨","cat":"meat","emoji":"🦴","note":"","tags":[]},
   {"id":"d069","name":"溜豆腐","cat":"veggie","emoji":"🧈","note":"","tags":[]},
-  {"id":"d070","name":"老虎菜","cat":"veggie","emoji":"🥗","note":"","tags":[]},
+  {"id":"d070","name":"老虎菜","cat":"veggie","emoji":"🥗","note":"","tags":["凉菜"]},
   {"id":"d071","name":"肉末雪菜炒毛豆","cat":"veggie","emoji":"🥬","note":"","tags":[]},
   {"id":"d072","name":"上汤娃娃菜","cat":"veggie","emoji":"🥬","note":"","tags":[]},
   {"id":"d073","name":"紫菜鸡蛋汤","cat":"soup","emoji":"🥣","note":"","tags":[]},

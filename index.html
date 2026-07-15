@@ -657,12 +657,18 @@
                 const serverDishes = await res.json();
                 if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
-                const localIds = new Set(dishes.map(d => d.id));
-                let newCount = 0;
+                let changed = false;
 
-                // 确保所有服务器菜品都在本地
+                // 确保所有服务器菜品都在本地，且信息是最新的
                 serverDishes.forEach(sd => {
-                    if (!localIds.has(sd.id)) {
+                    const existing = dishes.find(d => d.id === sd.id);
+                    if (existing) {
+                        // 更新已有菜品（分类可能被调整）
+                        if (sd.cat && existing.cat !== sd.cat) { existing.cat = sd.cat; changed = true; }
+                        if (sd.name && existing.name !== sd.name) { existing.name = sd.name; changed = true; }
+                        if (sd.emoji !== undefined && existing.emoji !== sd.emoji) { existing.emoji = sd.emoji; changed = true; }
+                        if (sd.note !== undefined && existing.note !== sd.note) { existing.note = sd.note; changed = true; }
+                    } else {
                         dishes.push({
                             id: sd.id,
                             name: sd.name,
@@ -672,15 +678,14 @@
                             fromServer: true,
                             createdAt: sd.createdAt || Date.now(),
                         });
-                        localIds.add(sd.id);
-                        newCount++;
+                        changed = true;
                     }
                 });
 
-                if (newCount > 0) {
+                if (changed) {
                     saveStore();
-                    console.log('🆕 从菜库同步了 ' + newCount + ' 道新菜');
-                    showToast('🆕 菜单已更新！新增 ' + newCount + ' 道菜');
+                    console.log('🆕 菜单已从菜库同步更新');
+                    showToast('🆕 菜单已更新！');
                 }
             } catch (e) {
                 console.log('📡 离线模式，使用本地数据');

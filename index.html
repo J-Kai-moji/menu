@@ -757,7 +757,7 @@
     <!-- ==================== 今日菜单页 ==================== -->
     <div id="page-today" class="page">
         <div class="header">
-            <h1>📅 今日菜单</h1>
+            <h1 id="todayTitle">📅 今日菜单</h1>
             <div class="subtitle" id="todaySubtitle">还没选菜呢</div>
         </div>
 
@@ -1210,6 +1210,11 @@
             const empty = document.getElementById('todayEmpty');
             const subtitle = document.getElementById('todaySubtitle');
             const badge = document.getElementById('todayBadge');
+
+            // 更新标题为真实日期
+            const now = new Date();
+            const title = document.getElementById('todayTitle');
+            title.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 今日菜单';
 
             // 更新导航徽标
             if (todayMenu.length > 0) {

@@ -49,5 +49,15 @@
   {"id":"d048","name":"糖醋排骨","cat":"meat","emoji":"🥩","note":""},
   {"id":"d049","name":"番茄炖牛肉","cat":"meat","emoji":"🍅","note":""},
   {"id":"d050","name":"清汤牛腩","cat":"meat","emoji":"🥘","note":""},
-  {"id":"d051","name":"蒜泥茄子","cat":"veggie","emoji":"🍆","note":""}
+  {"id":"d051","name":"蒜泥茄子","cat":"veggie","emoji":"🍆","note":""},
+  {"id":"d052","name":"拆骨肉炒辣椒","cat":"meat","emoji":"🌶️","note":""},
+  {"id":"d053","name":"拆骨肉炖白菜豆腐","cat":"meat","emoji":"🥘","note":""},
+  {"id":"d054","name":"葱爆羊肉","cat":"meat","emoji":"🥩","note":""},
+  {"id":"d055","name":"生炒排骨","cat":"meat","emoji":"🥩","note":""},
+  {"id":"d056","name":"酱炖豆腐","cat":"veggie","emoji":"🫘","note":""},
+  {"id":"d057","name":"麻婆豆腐","cat":"veggie","emoji":"🫘","note":""},
+  {"id":"d058","name":"鱼香茄子","cat":"veggie","emoji":"🍆","note":""},
+  {"id":"d059","name":"青椒火腿土豆片","cat":"veggie","emoji":"🥔","note":""},
+  {"id":"d060","name":"五花肉芸豆烧土豆","cat":"veggie","emoji":"🥔","note":""},
+  {"id":"d061","name":"排骨冬瓜汤","cat":"soup","emoji":"🥘","note":""}
 ]

@@ -563,17 +563,18 @@
           return false;
         }
 
-        // ===== Sync: 从 data.json 拉取新增菜品 =====
+        // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
         async function syncFromServer() {
             try {
                 const res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
                 if (!res.ok) return;
                 const serverDishes = await res.json();
-                if (!Array.isArray(serverDishes)) return;
+                if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
                 const localIds = new Set(dishes.map(d => d.id));
                 let newCount = 0;
 
+                // 确保所有服务器菜品都在本地
                 serverDishes.forEach(sd => {
                     if (!localIds.has(sd.id)) {
                         dishes.push({
@@ -593,9 +594,9 @@
                 if (newCount > 0) {
                     saveStore();
                     console.log('🆕 从菜库同步了 ' + newCount + ' 道新菜');
+                    showToast('🆕 菜单已更新！新增 ' + newCount + ' 道菜');
                 }
             } catch (e) {
-                // 离线或网络错误，使用本地/内嵌数据
                 console.log('📡 离线模式，使用本地数据');
             }
         }
@@ -836,7 +837,12 @@
 
         // ===== PWA: Service Worker =====
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            // 先清理旧版 SW，再注册新版
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                regs.forEach(r => r.unregister());
+            }).finally(() => {
+                navigator.serviceWorker.register('/sw.js?v=2').catch(() => {});
+            });
         }
 
         // ===== Init =====

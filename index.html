@@ -301,7 +301,7 @@
         /* ===== FAB ===== */
         .fab {
             position: fixed;
-            bottom: 24px;
+            bottom: 84px;
             right: 24px;
             width: 56px;
             height: 56px;
@@ -554,6 +554,106 @@
         @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 
+        /* ===== Page System ===== */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* ===== Bottom Nav ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            border-top: 1px solid var(--border);
+            z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0 6px;
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #aaa;
+            position: relative;
+        }
+        .nav-item.active { color: #e74c3c; }
+        .nav-icon { font-size: 22px; }
+        .nav-label { font-size: 11px; font-weight: 600; margin-top: 2px; }
+        .nav-badge {
+            position: absolute;
+            top: 4px;
+            right: 50%;
+            transform: translateX(140%);
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        /* ===== Today Page ===== */
+        .today-list {
+            padding: 0 16px 100px;
+        }
+        .today-group {
+            margin-bottom: 20px;
+        }
+        .today-group-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding: 12px 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .today-dish {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            box-shadow: var(--shadow);
+        }
+        .today-dish .td-emoji { font-size: 28px; flex-shrink: 0; }
+        .today-dish .td-name { flex: 1; font-size: 16px; font-weight: 600; }
+        .today-dish .td-remove {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: #fee;
+            color: #e74c3c;
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .today-empty { padding-top: 80px; }
+        .today-clear {
+            display: block;
+            margin: 20px auto 0;
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #999;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
         /* ===== Responsive ===== */
         @media (max-width: 400px) {
             .header { padding: 20px 16px 18px; }
@@ -566,11 +666,15 @@
             .dish-emoji { font-size: 24px; width: 36px; height: 36px; }
             .dish-name { font-size: 15px; }
             .dish-want { padding: 4px 8px; font-size: 12px; }
-            .fab { width: 48px; height: 48px; font-size: 24px; bottom: 20px; right: 20px; }
+            .fab { width: 48px; height: 48px; font-size: 24px; bottom: 80px; right: 20px; }
+            .today-list { padding: 0 10px 100px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ==================== 菜单浏览页 ==================== -->
+    <div id="page-browse" class="page active">
 
     <!-- Header -->
     <div class="header">
@@ -617,6 +721,23 @@
     <!-- FAB -->
     <button class="fab" onclick="openModal()" title="添加菜品">+</button>
 
+    </div><!-- /page-browse -->
+
+    <!-- ==================== 今日菜单页 ==================== -->
+    <div id="page-today" class="page">
+        <div class="header">
+            <h1>📅 今日菜单</h1>
+            <div class="subtitle" id="todaySubtitle">还没选菜呢</div>
+        </div>
+
+        <div class="today-list" id="todayList"></div>
+
+        <div class="empty-state today-empty" id="todayEmpty">
+            <div class="empty-icon">🛒</div>
+            <p>今天还没选菜～<br>去「菜单」里点 ❤️ 加入今日菜单吧</p>
+        </div>
+    </div>
+
     <!-- Add/Edit Modal -->
     <div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModalOutside(event)">
         <div class="modal" onclick="event.stopPropagation()">
@@ -654,6 +775,19 @@
         </div>
     </div>
 
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-page="browse" onclick="switchPage('browse')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">菜单</span>
+        </div>
+        <div class="nav-item" data-page="today" onclick="switchPage('today')">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">今日菜单</span>
+            <span class="nav-badge" id="todayBadge" style="display:none">0</span>
+        </div>
+    </nav>
+
     <!-- Toast container -->
     <div id="toastContainer"></div>
 
@@ -664,6 +798,7 @@
 
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
+        const TODAY_KEY = 'fm_today';
         const SYNC_KEY = 'fm_last_sync';
 
         const DEFAULT_EMOJIS = {
@@ -675,7 +810,9 @@
 
         let dishes = [];
         let wants = {};
+        let todayMenu = [];
         let currentTab = 'all';
+        let currentPage = 'browse';
         let searchQuery = '';
         let editingId = null;
         let selectedCat = 'meat';
@@ -686,12 +823,17 @@
             try {
                 dishes = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
                 wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
-            } catch { dishes = []; wants = {}; }
+                todayMenu = JSON.parse(localStorage.getItem(TODAY_KEY)) || [];
+            } catch { dishes = []; wants = {}; todayMenu = []; }
         }
 
         function saveStore() {
             localStorage.setItem(STORE_KEY, JSON.stringify(dishes));
             localStorage.setItem(WANT_KEY, JSON.stringify(wants));
+        }
+
+        function saveToday() {
+            localStorage.setItem(TODAY_KEY, JSON.stringify(todayMenu));
         }
 
         // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
@@ -775,6 +917,12 @@
             loadStore();                 // 加载本地（含种子数据 + 用户自增）
             await syncFromServer();      // 拉取服务器新增菜品
             renderAll();
+            // 更新今日菜单徽标
+            if (todayMenu.length > 0) {
+                const badge = document.getElementById('todayBadge');
+                badge.style.display = 'flex';
+                badge.textContent = todayMenu.length;
+            }
         }
 
         // ===== Render =====
@@ -785,10 +933,6 @@
                 result = result.filter(d => d.name.toLowerCase().includes(q));
             }
             return result;
-        }
-
-        function getWantList(dishId) {
-            return wants[dishId] || [];
         }
 
         function renderAll() {
@@ -821,20 +965,18 @@
             empty.style.display = 'none';
 
             list.innerHTML = filtered.map(d => {
-                const wantList = getWantList(d.id);
-                const wantedClass = wantList.length > 0 ? 'wanted' : '';
-                const tooltip = wantList.length > 0
-                    ? `${wantList.join('、')} 想吃`
-                    : '点击标记想吃';
+                const inToday = todayMenu.includes(d.id);
+                const wantedClass = inToday ? 'wanted' : '';
+                const tooltip = inToday ? '已加入今日菜单，点击取消' : '点击加入今日菜单';
                 return `
-                <div class="dish-card ${d.cat}" onclick="toggleWant('${d.id}')">
+                <div class="dish-card ${d.cat}">
                     <div class="dish-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</div>
                     <div class="dish-info">
                         <div class="dish-name">${escHtml(d.name)}</div>
                         ${d.note ? `<div class="dish-note">${escHtml(d.note)}</div>` : ''}
                     </div>
-                    <div class="dish-want ${wantedClass}" onclick="event.stopPropagation(); toggleWant('${d.id}')" title="${escHtml(tooltip)}">
-                        ❤️ <span class="want-count">${wantList.length}</span>
+                    <div class="dish-want ${wantedClass}" onclick="event.stopPropagation(); toggleToday('${d.id}')" title="${escHtml(tooltip)}">
+                        ❤️ ${inToday ? '<span class="want-count">✓</span>' : ''}
                     </div>
                     <button class="dish-delete" onclick="event.stopPropagation(); deleteDish('${d.id}')" title="删除">✕</button>
                 </div>`;
@@ -906,32 +1048,90 @@
             document.body.appendChild(overlay);
         }
 
-        // ===== Want / Unwant =====
-        function toggleWant(dishId) {
-            const current = getWantList(dishId);
-            let promptMsg;
-            if (current.length > 0) {
-                promptMsg = `当前 ${current.join('、')} 想吃这道菜\n\n输入你的名字来标记/取消"想吃"\n（留空则清除所有标记）`;
+        // ===== Today Menu: 红心加入/移除今日菜单 =====
+        function toggleToday(dishId) {
+            const idx = todayMenu.indexOf(dishId);
+            if (idx >= 0) {
+                todayMenu.splice(idx, 1);
             } else {
-                promptMsg = '谁想吃这道菜？\n输入你的名字：';
+                todayMenu.push(dishId);
             }
-            const name = prompt(promptMsg, '');
-            if (name === null) return;
-
-            if (!name.trim()) {
-                delete wants[dishId];
-            } else {
-                if (!wants[dishId]) wants[dishId] = [];
-                const idx = wants[dishId].indexOf(name.trim());
-                if (idx >= 0) {
-                    wants[dishId].splice(idx, 1);
-                    if (wants[dishId].length === 0) delete wants[dishId];
-                } else {
-                    wants[dishId].push(name.trim());
-                }
-            }
-            saveStore();
+            saveToday();
             renderList();
+            renderTodayIfActive();
+        }
+
+        // ===== Page Switching =====
+        function switchPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+            // 隐藏/显示 FAB
+            document.querySelector('.fab').style.display = page === 'browse' ? 'flex' : 'none';
+            if (page === 'today') renderToday();
+        }
+
+        function renderTodayIfActive() {
+            if (currentPage === 'today') renderToday();
+        }
+
+        function renderToday() {
+            const list = document.getElementById('todayList');
+            const empty = document.getElementById('todayEmpty');
+            const subtitle = document.getElementById('todaySubtitle');
+            const badge = document.getElementById('todayBadge');
+
+            // 更新导航徽标
+            if (todayMenu.length > 0) {
+                badge.style.display = 'flex';
+                badge.textContent = todayMenu.length;
+            } else {
+                badge.style.display = 'none';
+            }
+
+            if (todayMenu.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                subtitle.textContent = '还没选菜呢';
+                return;
+            }
+            empty.style.display = 'none';
+            subtitle.textContent = '共 ' + todayMenu.length + ' 道菜';
+
+            // 分组
+            const groups = { meat: [], veggie: [], soup: [], staple: [] };
+            const labels = { meat: '🥩 荤菜', veggie: '🥬 素菜', soup: '🍲 汤', staple: '🍚 主食' };
+            todayMenu.forEach(id => {
+                const dish = dishes.find(d => d.id === id);
+                if (dish && groups[dish.cat]) groups[dish.cat].push(dish);
+            });
+
+            list.innerHTML = Object.entries(groups).map(([cat, items]) => {
+                if (items.length === 0) return '';
+                return `<div class="today-group">
+                    <div class="today-group-title">${labels[cat]} (${items.length})</div>
+                    ${items.map(d => `
+                        <div class="today-dish">
+                            <span class="td-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</span>
+                            <span class="td-name">${escHtml(d.name)}</span>
+                            <button class="td-remove" onclick="toggleToday('${d.id}')" title="移除">✕</button>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }).join('');
+
+            // 清空按钮
+            list.insertAdjacentHTML('beforeend',
+                '<button class="today-clear" onclick="clearToday()">🗑️ 清空今日菜单</button>');
+        }
+
+        function clearToday() {
+            if (!confirm('确定清空今日菜单？')) return;
+            todayMenu = [];
+            saveToday();
+            renderList();
+            renderToday();
         }
 
         // ===== Delete =====
@@ -941,7 +1141,9 @@
             if (!confirm(`确定删除「${dish.name}」吗？`)) return;
             dishes = dishes.filter(d => d.id !== id);
             delete wants[id];
+            todayMenu = todayMenu.filter(tid => tid !== id);
             saveStore();
+            saveToday();
             renderAll();
             showToast(`已删除「${dish.name}」`);
         }

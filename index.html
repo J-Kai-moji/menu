@@ -531,8 +531,8 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const STORE_KEY = 'fm_dishes';
-        const WANT_KEY = 'fm_wants';
+        const STORE_KEY = 'fm_dishes_v2';
+        const WANT_KEY = 'fm_wants_v2';
         const SYNC_KEY = 'fm_last_sync';
 
         const DEFAULT_EMOJIS = {
@@ -857,7 +857,7 @@
             toast.className = 'toast';
             toast.textContent = msg;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         // ===== Keyboard =====
@@ -870,16 +870,22 @@
 
         // ===== PWA: Service Worker =====
         if ('serviceWorker' in navigator) {
-            // 先清理旧版 SW，再注册新版
+            // 彻底清理所有旧 SW
             navigator.serviceWorker.getRegistrations().then(regs => {
                 regs.forEach(r => r.unregister());
+                // 清除所有 SW 缓存
+                caches.keys().then(keys => {
+                    keys.forEach(k => caches.delete(k));
+                });
             }).finally(() => {
-                navigator.serviceWorker.register('/sw.js?v=2').catch(() => {});
+                navigator.serviceWorker.register('/sw.js?v=3').catch(() => {});
             });
         }
 
         // ===== Init =====
-        initData();
+        initData().then(() => {
+            console.log('✅ 菜单加载完成，共 ' + dishes.length + ' 道菜');
+        });
         renderEmojiPicker();
     </script>
 </body>

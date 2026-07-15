@@ -24,6 +24,9 @@
             --soup: #f39c12;
             --soup-light: #fef5e7;
             --soup-bg: #fffdf5;
+            --staple: #e67e22;
+            --staple-light: #fdf2e9;
+            --staple-bg: #fffaf5;
             --bg: #f8f6f2;
             --card: #ffffff;
             --text: #2c3e50;
@@ -102,6 +105,7 @@
         .tab.active[data-cat="meat"] { background: var(--meat); }
         .tab.active[data-cat="veggie"] { background: var(--veggie); }
         .tab.active[data-cat="soup"] { background: var(--soup); }
+        .tab.active[data-cat="staple"] { background: var(--staple); }
         .tab .count {
             display: inline-block;
             background: rgba(0,0,0,0.1);
@@ -140,6 +144,7 @@
         .dish-card.meat { border-left-color: var(--meat); }
         .dish-card.veggie { border-left-color: var(--veggie); }
         .dish-card.soup { border-left-color: var(--soup); }
+        .dish-card.staple { border-left-color: var(--staple); }
 
         .dish-emoji {
             font-size: 28px;
@@ -154,6 +159,7 @@
         .dish-card.meat .dish-emoji { background: var(--meat-light); }
         .dish-card.veggie .dish-emoji { background: var(--veggie-light); }
         .dish-card.soup .dish-emoji { background: var(--soup-light); }
+        .dish-card.staple .dish-emoji { background: var(--staple-light); }
 
         .dish-info { flex: 1; min-width: 0; }
         .dish-name {
@@ -352,6 +358,11 @@
             background: var(--soup-bg);
             color: var(--soup);
         }
+        .cat-option.selected[data-cat="staple"] {
+            border-color: var(--staple);
+            background: var(--staple-bg);
+            color: var(--staple);
+        }
 
         .emoji-picker {
             display: flex;
@@ -458,6 +469,9 @@
         <div class="tab" data-cat="soup" onclick="switchTab('soup')">
             🍲 汤 <span class="count" id="countSoup">0</span>
         </div>
+        <div class="tab" data-cat="staple" onclick="switchTab('staple')">
+            🍚 主食 <span class="count" id="countStaple">0</span>
+        </div>
     </div>
 
     <!-- Dish List -->
@@ -488,6 +502,7 @@
                     <div class="cat-option selected" data-cat="meat" onclick="selectCat('meat')">🥩 荤菜</div>
                     <div class="cat-option" data-cat="veggie" onclick="selectCat('veggie')">🥬 素菜</div>
                     <div class="cat-option" data-cat="soup" onclick="selectCat('soup')">🍲 汤</div>
+                    <div class="cat-option" data-cat="staple" onclick="selectCat('staple')">🍚 主食</div>
                 </div>
             </div>
 
@@ -523,7 +538,8 @@
         const DEFAULT_EMOJIS = {
             meat: ['🥩','🍗','🍖','🥓','🦐','🐟','🐔','🦆','🐷','🐮','🦀','🦑','🍤','🥘','🍳'],
             veggie: ['🥬','🥒','🥦','🍅','🍆','🌶️','🧄','🧅','🥕','🌽','🍄','🫑','🥔','🫘','🥗'],
-            soup: ['🍲','🥣','🫕','🍜','🥘','🍵','🫘']
+            soup: ['🍲','🥣','🫕','🍜','🥘','🍵','🫘'],
+            staple: ['🍚','🍜','🍝','🥟','🍞','🥖','🍠','🌽','🥐','🫓','🍙','🍘']
         };
 
         let dishes = [];
@@ -644,6 +660,7 @@
             document.getElementById('countMeat').textContent = dishes.filter(d => d.cat === 'meat').length;
             document.getElementById('countVeggie').textContent = dishes.filter(d => d.cat === 'veggie').length;
             document.getElementById('countSoup').textContent = dishes.filter(d => d.cat === 'soup').length;
+            document.getElementById('countStaple').textContent = dishes.filter(d => d.cat === 'staple').length;
 
             document.querySelectorAll('.tab').forEach(t => {
                 t.classList.toggle('active', t.dataset.cat === currentTab);
@@ -684,7 +701,7 @@
         }
 
         function defaultEmojiForCat(cat) {
-            return { meat: '🥩', veggie: '🥬', soup: '🍲' }[cat] || '🍽️';
+            return { meat: '🥩', veggie: '🥬', soup: '🍲', staple: '🍚' }[cat] || '🍽️';
         }
 
         function escHtml(s) {

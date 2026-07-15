@@ -228,11 +228,26 @@
         .dish-name {
             font-size: 16px;
             font-weight: 600;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dish-name-text {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            line-height: 1.3;
         }
+        .tag {
+            flex-shrink: 0;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+        .tag-seafood { background: #dbeafe; color: #2563eb; }
+        .tag-spicy { background: #fee2e2; color: #dc2626; }
         .dish-note {
             font-size: 12px;
             color: var(--text-secondary);
@@ -811,7 +826,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '51';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '52';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -866,67 +881,67 @@
 
         // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
         const SEED_DISHES = [
-          {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":""},
-          {"id":"d002","name":"豆豉鲮鱼炒油麦菜","cat":"meat","emoji":"🐟","note":""},
-          {"id":"d003","name":"葱姜炒花甲","cat":"meat","emoji":"🦪","note":""},
-          {"id":"d004","name":"黄焖鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d005","name":"海南鸡饭","cat":"staple","emoji":"🐔","note":""},
-          {"id":"d006","name":"汉堡肉盖饭","cat":"staple","emoji":"🍛","note":""},
-          {"id":"d007","name":"三杯鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d008","name":"土豆鸡块","cat":"meat","emoji":"🥔","note":""},
-          {"id":"d009","name":"卤肉饭","cat":"staple","emoji":"🍖","note":""},
-          {"id":"d010","name":"新疆烤包子","cat":"staple","emoji":"🥟","note":""},
-          {"id":"d011","name":"辣椒炒鸡","cat":"meat","emoji":"🌶️","note":""},
-          {"id":"d012","name":"筋头巴脑炖土豆","cat":"meat","emoji":"🥘","note":""},
-          {"id":"d013","name":"白菜炖豆腐","cat":"veggie","emoji":"🥬","note":""},
-          {"id":"d014","name":"韭菜炒鸡蛋","cat":"veggie","emoji":"🥚","note":""},
-          {"id":"d015","name":"尖椒干豆腐","cat":"veggie","emoji":"🫑","note":""},
-          {"id":"d016","name":"裙带菜牛肉汤","cat":"soup","emoji":"🥣","note":""},
-          {"id":"d017","name":"番茄时蔬汤","cat":"soup","emoji":"🍅","note":""},
-          {"id":"d018","name":"番茄清炖牛肉","cat":"soup","emoji":"🥘","note":""},
-          {"id":"d019","name":"东南亚鸡饭","cat":"staple","emoji":"🐔","note":""},
-          {"id":"d020","name":"炝锅面","cat":"staple","emoji":"🍜","note":""},
-          {"id":"d021","name":"米饭","cat":"staple","emoji":"🍚","note":""},
-          {"id":"d022","name":"杂粮粥","cat":"staple","emoji":"🥣","note":""},
-          {"id":"d023","name":"白粥","cat":"staple","emoji":"🥣","note":""},
-          {"id":"d024","name":"盐葱酱牛舌盖饭","cat":"staple","emoji":"🍛","note":""},
-          {"id":"d025","name":"东北老式拌饭","cat":"staple","emoji":"🍚","note":""},
-          {"id":"d026","name":"凉拌菠菜","cat":"veggie","emoji":"🥬","note":""},
-          {"id":"d027","name":"炝拌白菜心","cat":"veggie","emoji":"🥬","note":""},
-          {"id":"d028","name":"蒜蓉蒸排骨","cat":"meat","emoji":"🥩","note":""},
-          {"id":"d029","name":"沙姜盐焗鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d030","name":"香煎鲈鱼","cat":"meat","emoji":"🐟","note":""},
-          {"id":"d031","name":"柠檬鸡中翅","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d032","name":"板栗焖鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d033","name":"烤羊排","cat":"meat","emoji":"🥩","note":""},
-          {"id":"d034","name":"猪头肉拌黄瓜","cat":"meat","emoji":"🥒","note":""},
-          {"id":"d035","name":"沙姜焗鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d036","name":"酸菜炖排骨","cat":"meat","emoji":"🥘","note":""},
-          {"id":"d037","name":"油焖大虾","cat":"meat","emoji":"🦐","note":""},
-          {"id":"d038","name":"大盘鸡","cat":"meat","emoji":"🍗","note":""},
-          {"id":"d039","name":"胸口爆包菜","cat":"meat","emoji":"🥬","note":""},
-          {"id":"d040","name":"酱油水烧黄鱼","cat":"meat","emoji":"🐟","note":""},
-          {"id":"d041","name":"土鸡菌菇汤","cat":"soup","emoji":"🍲","note":""},
-          {"id":"d042","name":"咸排骨煲苦瓜","cat":"soup","emoji":"🥘","note":""},
-          {"id":"d043","name":"脊骨萝卜汤","cat":"soup","emoji":"🥘","note":""},
-          {"id":"d044","name":"五花肉泡菜豆腐汤","cat":"soup","emoji":"🥘","note":""},
-          {"id":"d045","name":"麻辣拌","cat":"staple","emoji":"🌶️","note":""},
-          {"id":"d046","name":"黄油拌饭","cat":"staple","emoji":"🍚","note":""},
-          {"id":"d047","name":"腊肠焖饭","cat":"staple","emoji":"🍚","note":""},
-          {"id":"d048","name":"糖醋排骨","cat":"meat","emoji":"🥩","note":""},
-          {"id":"d049","name":"番茄炖牛肉","cat":"meat","emoji":"🍅","note":""},
-          {"id":"d050","name":"清汤牛腩","cat":"meat","emoji":"🥘","note":""},
-          {"id":"d051","name":"蒜泥茄子","cat":"veggie","emoji":"🍆","note":""},
-          {"id":"d052","name":"拆骨肉炒辣椒","cat":"meat","emoji":"🌶️","note":""},
-          {"id":"d053","name":"拆骨肉炖白菜豆腐","cat":"meat","emoji":"🥘","note":""},
-          {"id":"d054","name":"葱爆羊肉","cat":"meat","emoji":"🥩","note":""},
-          {"id":"d055","name":"生炒排骨","cat":"meat","emoji":"🥩","note":""},
-          {"id":"d056","name":"酱炖豆腐","cat":"veggie","emoji":"🫘","note":""},
-          {"id":"d057","name":"麻婆豆腐","cat":"veggie","emoji":"🫘","note":""},
-          {"id":"d058","name":"鱼香茄子","cat":"veggie","emoji":"🍆","note":""},
-          {"id":"d059","name":"青椒火腿土豆片","cat":"veggie","emoji":"🥔","note":""},
-          {"id":"d060","name":"五花肉芸豆烧土豆","cat":"veggie","emoji":"🥔","note":""},
-          {"id":"d061","name":"排骨冬瓜汤","cat":"soup","emoji":"🥘","note":""}
+          {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":"","tags":[]},
+          {"id":"d002","name":"豆豉鲮鱼炒油麦菜","cat":"meat","emoji":"🐟","note":"","tags":["海鲜"]},
+          {"id":"d003","name":"葱姜炒花甲","cat":"meat","emoji":"🦪","note":"","tags":["海鲜"]},
+          {"id":"d004","name":"黄焖鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d005","name":"海南鸡饭","cat":"staple","emoji":"🐔","note":"","tags":[]},
+          {"id":"d006","name":"汉堡肉盖饭","cat":"staple","emoji":"🍛","note":"","tags":[]},
+          {"id":"d007","name":"三杯鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d008","name":"土豆鸡块","cat":"meat","emoji":"🥔","note":"","tags":[]},
+          {"id":"d009","name":"卤肉饭","cat":"staple","emoji":"🍖","note":"","tags":[]},
+          {"id":"d010","name":"新疆烤包子","cat":"staple","emoji":"🥟","note":"","tags":[]},
+          {"id":"d011","name":"辣椒炒鸡","cat":"meat","emoji":"🌶️","note":"","tags":["辣"]},
+          {"id":"d012","name":"筋头巴脑炖土豆","cat":"meat","emoji":"🥘","note":"","tags":[]},
+          {"id":"d013","name":"白菜炖豆腐","cat":"veggie","emoji":"🥬","note":"","tags":[]},
+          {"id":"d014","name":"韭菜炒鸡蛋","cat":"veggie","emoji":"🥚","note":"","tags":[]},
+          {"id":"d015","name":"尖椒干豆腐","cat":"veggie","emoji":"🫑","note":"","tags":[]},
+          {"id":"d016","name":"裙带菜牛肉汤","cat":"soup","emoji":"🥣","note":"","tags":[]},
+          {"id":"d017","name":"番茄时蔬汤","cat":"soup","emoji":"🍅","note":"","tags":[]},
+          {"id":"d018","name":"番茄清炖牛肉","cat":"soup","emoji":"🥘","note":"","tags":[]},
+          {"id":"d019","name":"东南亚鸡饭","cat":"staple","emoji":"🐔","note":"","tags":[]},
+          {"id":"d020","name":"炝锅面","cat":"staple","emoji":"🍜","note":"","tags":["辣"]},
+          {"id":"d021","name":"米饭","cat":"staple","emoji":"🍚","note":"","tags":[]},
+          {"id":"d022","name":"杂粮粥","cat":"staple","emoji":"🥣","note":"","tags":[]},
+          {"id":"d023","name":"白粥","cat":"staple","emoji":"🥣","note":"","tags":[]},
+          {"id":"d024","name":"盐葱酱牛舌盖饭","cat":"staple","emoji":"🍛","note":"","tags":[]},
+          {"id":"d025","name":"东北老式拌饭","cat":"staple","emoji":"🍚","note":"","tags":[]},
+          {"id":"d026","name":"凉拌菠菜","cat":"veggie","emoji":"🥬","note":"","tags":[]},
+          {"id":"d027","name":"炝拌白菜心","cat":"veggie","emoji":"🥬","note":"","tags":["辣"]},
+          {"id":"d028","name":"蒜蓉蒸排骨","cat":"meat","emoji":"🥩","note":"","tags":[]},
+          {"id":"d029","name":"沙姜盐焗鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d030","name":"香煎鲈鱼","cat":"meat","emoji":"🐟","note":"","tags":["海鲜"]},
+          {"id":"d031","name":"柠檬鸡中翅","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d032","name":"板栗焖鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d033","name":"烤羊排","cat":"meat","emoji":"🥩","note":"","tags":[]},
+          {"id":"d034","name":"猪头肉拌黄瓜","cat":"meat","emoji":"🥒","note":"","tags":[]},
+          {"id":"d035","name":"沙姜焗鸡","cat":"meat","emoji":"🍗","note":"","tags":[]},
+          {"id":"d036","name":"酸菜炖排骨","cat":"meat","emoji":"🥘","note":"","tags":[]},
+          {"id":"d037","name":"油焖大虾","cat":"meat","emoji":"🦐","note":"","tags":["海鲜"]},
+          {"id":"d038","name":"大盘鸡","cat":"meat","emoji":"🍗","note":"","tags":["辣"]},
+          {"id":"d039","name":"胸口爆包菜","cat":"meat","emoji":"🥬","note":"","tags":[]},
+          {"id":"d040","name":"酱油水烧黄鱼","cat":"meat","emoji":"🐟","note":"","tags":["海鲜"]},
+          {"id":"d041","name":"土鸡菌菇汤","cat":"soup","emoji":"🍲","note":"","tags":[]},
+          {"id":"d042","name":"咸排骨煲苦瓜","cat":"soup","emoji":"🥘","note":"","tags":[]},
+          {"id":"d043","name":"脊骨萝卜汤","cat":"soup","emoji":"🥘","note":"","tags":[]},
+          {"id":"d044","name":"五花肉泡菜豆腐汤","cat":"soup","emoji":"🥘","note":"","tags":["辣"]},
+          {"id":"d045","name":"麻辣拌","cat":"staple","emoji":"🌶️","note":"","tags":["辣"]},
+          {"id":"d046","name":"黄油拌饭","cat":"staple","emoji":"🍚","note":"","tags":[]},
+          {"id":"d047","name":"腊肠焖饭","cat":"staple","emoji":"🍚","note":"","tags":[]},
+          {"id":"d048","name":"糖醋排骨","cat":"meat","emoji":"🥩","note":"","tags":[]},
+          {"id":"d049","name":"番茄炖牛肉","cat":"meat","emoji":"🍅","note":"","tags":[]},
+          {"id":"d050","name":"清汤牛腩","cat":"meat","emoji":"🥘","note":"","tags":[]},
+          {"id":"d051","name":"蒜泥茄子","cat":"veggie","emoji":"🍆","note":"","tags":[]},
+          {"id":"d052","name":"拆骨肉炒辣椒","cat":"meat","emoji":"🌶️","note":"","tags":["辣"]},
+          {"id":"d053","name":"拆骨肉炖白菜豆腐","cat":"meat","emoji":"🥘","note":"","tags":[]},
+          {"id":"d054","name":"葱爆羊肉","cat":"meat","emoji":"🥩","note":"","tags":[]},
+          {"id":"d055","name":"生炒排骨","cat":"meat","emoji":"🥩","note":"","tags":[]},
+          {"id":"d056","name":"酱炖豆腐","cat":"veggie","emoji":"🫘","note":"","tags":[]},
+          {"id":"d057","name":"麻婆豆腐","cat":"veggie","emoji":"🫘","note":"","tags":["辣"]},
+          {"id":"d058","name":"鱼香茄子","cat":"veggie","emoji":"🍆","note":"","tags":["辣"]},
+          {"id":"d059","name":"青椒火腿土豆片","cat":"veggie","emoji":"🥔","note":"","tags":[]},
+          {"id":"d060","name":"五花肉芸豆烧土豆","cat":"veggie","emoji":"🥔","note":"","tags":[]},
+          {"id":"d061","name":"排骨冬瓜汤","cat":"soup","emoji":"🥘","note":"","tags":[]}
         ];
 
         function ensureSeedData() {
@@ -959,6 +974,7 @@
                         if (sd.name && existing.name !== sd.name) { existing.name = sd.name; changed = true; }
                         if (sd.emoji !== undefined && existing.emoji !== sd.emoji) { existing.emoji = sd.emoji; changed = true; }
                         if (sd.note !== undefined && existing.note !== sd.note) { existing.note = sd.note; changed = true; }
+                        if (sd.tags !== undefined) { existing.tags = sd.tags; changed = true; }
                     } else {
                         dishes.push({
                             id: sd.id,
@@ -966,6 +982,7 @@
                             cat: sd.cat,
                             emoji: sd.emoji || '',
                             note: sd.note || '',
+                            tags: sd.tags || [],
                             fromServer: true,
                             createdAt: sd.createdAt || Date.now(),
                         });
@@ -1043,7 +1060,10 @@
                 <div class="dish-card ${d.cat}">
                     <div class="dish-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</div>
                     <div class="dish-info">
-                        <div class="dish-name">${escHtml(d.name)}</div>
+                        <div class="dish-name">
+                            <span class="dish-name-text">${escHtml(d.name)}</span>
+                            ${(d.tags || []).map(t => `<span class="tag tag-${t === '海鲜' ? 'seafood' : 'spicy'}">${t}</span>`).join('')}
+                        </div>
                         ${d.note ? `<div class="dish-note">${escHtml(d.note)}</div>` : ''}
                     </div>
                     <div class="dish-want ${wantedClass}" onclick="event.stopPropagation(); toggleToday('${d.id}')" title="${escHtml(tooltip)}">

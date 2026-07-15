@@ -945,9 +945,14 @@
         ];
 
         function ensureSeedData() {
-          // 首次使用：把内嵌菜品写入 localStorage
+          // 首次使用：把内嵌菜品写入 localStorage，按顺序分配时间戳
           if (!localStorage.getItem(STORE_KEY)) {
-            dishes = SEED_DISHES.map(d => ({ ...d, fromServer: true, createdAt: Date.now() }));
+            const baseTime = Date.now();
+            dishes = SEED_DISHES.map((d, i) => ({
+              ...d,
+              fromServer: true,
+              createdAt: baseTime - (SEED_DISHES.length - i) * 1000  // 越后面时间越新
+            }));
             wants = {};
             saveStore();
             return true;
@@ -1015,11 +1020,13 @@
 
         // ===== Render =====
         function getFilteredDishes() {
-            let result = currentTab === 'all' ? dishes : dishes.filter(d => d.cat === currentTab);
+            let result = currentTab === 'all' ? [...dishes] : dishes.filter(d => d.cat === currentTab);
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 result = result.filter(d => d.name.toLowerCase().includes(q));
             }
+            // 按创建时间倒序：最新加的排在前面
+            result.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             return result;
         }
 

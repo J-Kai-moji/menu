@@ -546,10 +546,27 @@
             localStorage.setItem(WANT_KEY, JSON.stringify(wants));
         }
 
-        // ===== Sync: 从 data.json 拉取官方菜库，合并到本地 =====
+        // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
+        const SEED_DISHES = [
+          {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":""},
+          {"id":"d002","name":"豆豉鲮鱼炒油麦菜","cat":"meat","emoji":"🐟","note":""}
+        ];
+
+        function ensureSeedData() {
+          // 首次使用：把内嵌菜品写入 localStorage
+          if (!localStorage.getItem(STORE_KEY)) {
+            dishes = SEED_DISHES.map(d => ({ ...d, fromServer: true, createdAt: Date.now() }));
+            wants = {};
+            saveStore();
+            return true;
+          }
+          return false;
+        }
+
+        // ===== Sync: 从 data.json 拉取新增菜品 =====
         async function syncFromServer() {
             try {
-                const res = await fetch('/data.json', { cache: 'no-cache' });
+                const res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
                 if (!res.ok) return;
                 const serverDishes = await res.json();
                 if (!Array.isArray(serverDishes)) return;
@@ -575,17 +592,18 @@
 
                 if (newCount > 0) {
                     saveStore();
-                    console.log(`🆕 从菜库同步了 ${newCount} 道新菜`);
+                    console.log('🆕 从菜库同步了 ' + newCount + ' 道新菜');
                 }
             } catch (e) {
-                // 离线或网络错误，使用本地数据
+                // 离线或网络错误，使用本地/内嵌数据
                 console.log('📡 离线模式，使用本地数据');
             }
         }
 
         async function initData() {
-            loadStore();
-            await syncFromServer();
+            ensureSeedData();           // 内嵌种子数据，保证一定有菜
+            loadStore();                 // 加载本地（含种子数据 + 用户自增）
+            await syncFromServer();      // 拉取服务器新增菜品
             renderAll();
         }
 

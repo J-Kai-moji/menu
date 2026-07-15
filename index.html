@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>🏠 家庭菜单</title>
 
     <!-- PWA -->
@@ -808,10 +811,23 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
+        const APP_VERSION = '44';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
-        const SYNC_KEY = 'fm_last_sync';
+        const VERSION_KEY = 'fm_version';
+
+        // 版本检测：新版本自动清旧数据
+        (function checkVersion() {
+            const stored = localStorage.getItem(VERSION_KEY);
+            if (stored !== APP_VERSION) {
+                // 保留今日菜单，清空菜品缓存强制重新同步
+                const today = localStorage.getItem(TODAY_KEY);
+                localStorage.clear();
+                if (today) localStorage.setItem(TODAY_KEY, today);
+                localStorage.setItem(VERSION_KEY, APP_VERSION);
+            }
+        })();
 
         const DEFAULT_EMOJIS = {
             meat: ['🥩','🍗','🍖','🥓','🦐','🐟','🐔','🦆','🐷','🐮','🦀','🦑','🍤','🥘','🍳'],
@@ -1328,7 +1344,7 @@
                     keys.forEach(k => caches.delete(k));
                 });
             }).finally(() => {
-                navigator.serviceWorker.register('/sw.js?v=3').catch(() => {});
+                navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION).catch(() => {});
             });
         }
 

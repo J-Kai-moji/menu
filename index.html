@@ -1331,6 +1331,13 @@
             if (!name) { showToast('请输入菜品名称'); document.getElementById('dishName').focus(); return; }
             const note = document.getElementById('dishNote').value.trim();
 
+            // 重名检测
+            const dup = dishes.find(d => d.name === name && d.id !== editingId);
+            if (dup) {
+                showToast('「' + name + '」已存在，无需重复添加');
+                return;
+            }
+
             if (editingId) {
                 const dish = dishes.find(d => d.id === editingId);
                 if (dish) {

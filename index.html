@@ -493,6 +493,23 @@
             max-width: 300px;
             width: 85%;
             animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .pick-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: #f0f0ec;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         @keyframes popIn {
             from { transform: scale(0.5); opacity: 0; }
@@ -1028,7 +1045,6 @@
         }
 
         function showPickResult(dish) {
-            // 移除旧的结果弹窗
             const old = document.getElementById('pickOverlay');
             if (old) old.remove();
 
@@ -1039,13 +1055,26 @@
             overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
             overlay.innerHTML = `
                 <div class="pick-card">
+                    <button class="pick-close" onclick="document.getElementById('pickOverlay').remove()">✕</button>
                     <div class="pick-title">🎲 今天吃这个！</div>
                     <div class="pick-emoji">${dish.emoji || '🍽️'}</div>
                     <div class="pick-name">${dish.name}</div>
                     <div class="pick-cat">${catLabel}</div>
-                    <button class="pick-btn" onclick="document.getElementById('pickOverlay').remove()">OK</button>
+                    <button class="pick-btn" onclick="pickAddToToday('${dish.id}')">✅ 加入今日菜单</button>
                 </div>`;
             document.body.appendChild(overlay);
+        }
+
+        function pickAddToToday(dishId) {
+            if (!todayMenu.includes(dishId)) {
+                todayMenu.push(dishId);
+                saveToday();
+                renderList();
+                renderTodayIfActive();
+            }
+            const overlay = document.getElementById('pickOverlay');
+            if (overlay) overlay.remove();
+            showToast('已加入今日菜单 ✅');
         }
 
         // ===== Today Menu: 红心加入/移除今日菜单 =====

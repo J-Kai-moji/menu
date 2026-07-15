@@ -1,0 +1,20 @@
+[
+  {
+    "id": "d001",
+    "name": "广式萝卜牛腩煲",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "createdAt": 1752624000000,
+    "updatedAt": 1752624000000
+  },
+  {
+    "id": "d002",
+    "name": "豆豉鲮鱼炒油麦菜",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "createdAt": 1752624000000,
+    "updatedAt": 1752624000000
+  }
+]

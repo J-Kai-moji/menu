@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>🏠 家庭菜单</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#e74c3c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="家庭菜单">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --meat: #e74c3c;
+            --meat-light: #fde8e5;
+            --meat-bg: #fff5f5;
+            --veggie: #27ae60;
+            --veggie-light: #e6f7ee;
+            --veggie-bg: #f5fdf8;
+            --soup: #f39c12;
+            --soup-light: #fef5e7;
+            --soup-bg: #fffdf5;
+            --bg: #f8f6f2;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --border: #e8e4dc;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            color: #fff;
+            padding: 28px 20px 24px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.25);
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* ===== Stats Bar ===== */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px 20px;
+            background: var(--card);
+            margin: -10px 16px 0;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 10;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .stat-num.meat { color: var(--meat); }
+        .stat-num.veggie { color: var(--veggie); }
+        .stat-num.soup { color: var(--soup); }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== Category Tabs ===== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 16px 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            background: var(--card);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.25s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .tab:hover { border-color: #ccc; }
+        .tab.active {
+            color: #fff;
+            border-color: transparent;
+        }
+        .tab.active[data-cat="meat"] { background: var(--meat); }
+        .tab.active[data-cat="veggie"] { background: var(--veggie); }
+        .tab.active[data-cat="soup"] { background: var(--soup); }
+        .tab .count {
+            display: inline-block;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        .tab.active .count { background: rgba(255,255,255,0.25); }
+
+        /* ===== Dish List ===== */
+        .list-container {
+            padding: 0 16px;
+        }
+        .dish-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dish-card {
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .dish-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .dish-card.meat { border-left-color: var(--meat); }
+        .dish-card.veggie { border-left-color: var(--veggie); }
+        .dish-card.soup { border-left-color: var(--soup); }
+
+        .dish-emoji {
+            font-size: 32px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .dish-card.meat .dish-emoji { background: var(--meat-light); }
+        .dish-card.veggie .dish-emoji { background: var(--veggie-light); }
+        .dish-card.soup .dish-emoji { background: var(--soup-light); }
+
+        .dish-info { flex: 1; min-width: 0; }
+        .dish-name {
+            font-size: 17px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .dish-note {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dish-want {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 2px solid #eee;
+            background: #fafafa;
+            color: #999;
+            user-select: none;
+        }
+        .dish-want:hover { border-color: #ff6b6b; color: #ff6b6b; }
+        .dish-want.wanted {
+            background: #ffe0e0;
+            border-color: #ff6b6b;
+            color: #e74c3c;
+        }
+        .dish-want .want-count {
+            font-size: 12px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 50px;
+            padding: 1px 6px;
+            min-width: 22px;
+            text-align: center;
+        }
+        .dish-want.wanted .want-count {
+            background: rgba(231,76,60,0.15);
+        }
+
+        .dish-delete {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: #ccc;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dish-delete:hover { background: #fee; color: #e74c3c; }
+
+        /* ===== Empty State ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .empty-icon { font-size: 64px; margin-bottom: 16px; }
+        .empty-state p { font-size: 15px; line-height: 1.6; }
+
+        /* ===== FAB ===== */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            color: #fff;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(231, 76, 60, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fab:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 30px rgba(231, 76, 60, 0.5);
+        }
+        .fab:active { transform: scale(0.95); }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 300;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .modal {
+            background: var(--card);
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px 20px 40px;
+            animation: slideUp 0.3s ease-out;
+        }
+        .modal h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-family: inherit;
+            background: #fafaf8;
+            transition: border-color 0.2s;
+            color: var(--text);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f39c12;
+            background: #fff;
+        }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        .cat-selector {
+            display: flex;
+            gap: 10px;
+        }
+        .cat-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafaf8;
+            user-select: none;
+        }
+        .cat-option:hover { border-color: #ccc; }
+        .cat-option.selected[data-cat="meat"] {
+            border-color: var(--meat);
+            background: var(--meat-bg);
+            color: var(--meat);
+        }
+        .cat-option.selected[data-cat="veggie"] {
+            border-color: var(--veggie);
+            background: var(--veggie-bg);
+            color: var(--veggie);
+        }
+        .cat-option.selected[data-cat="soup"] {
+            border-color: var(--soup);
+            background: var(--soup-bg);
+            color: var(--soup);
+        }
+
+        .emoji-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .emoji-opt {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: #f5f5f0;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .emoji-opt:hover { border-color: #ccc; transform: scale(1.1); }
+        .emoji-opt.selected { border-color: #f39c12; background: #fff8e6; }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+        }
+        .btn-primary:hover { box-shadow: 0 6px 24px rgba(231, 76, 60, 0.4); transform: translateY(-1px); }
+        .btn-cancel {
+            background: #f0f0ec;
+            color: var(--text-secondary);
+        }
+        .btn-cancel:hover { background: #e8e8e2; }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 999;
+            animation: toastIn 0.3s, toastOut 0.3s 1.7s forwards;
+            pointer-events: none;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 400px) {
+            .header h1 { font-size: 24px; }
+            .stats-bar { gap: 16px; margin: -10px 10px 0; padding: 12px 14px; }
+            .stat-num { font-size: 20px; }
+            .dish-card { padding: 12px 14px; gap: 10px; }
+            .dish-emoji { font-size: 26px; width: 36px; height: 36px; }
+            .dish-name { font-size: 15px; }
+            .fab { width: 48px; height: 48px; font-size: 24px; bottom: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🏠 家庭菜单</h1>
+        <div class="subtitle">今天想吃什么？</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-num" id="statAll">0</div>
+            <div class="stat-label">全部菜品</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num meat" id="statMeat">0</div>
+            <div class="stat-label">🥩 荤菜</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num veggie" id="statVeggie">0</div>
+            <div class="stat-label">🥬 素菜</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num soup" id="statSoup">0</div>
+            <div class="stat-label">🍲 汤</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-cat="all" onclick="switchTab('all')">
+            全部 <span class="count" id="countAll">0</span>
+        </div>
+        <div class="tab" data-cat="meat" onclick="switchTab('meat')">
+            🥩 荤菜 <span class="count" id="countMeat">0</span>
+        </div>
+        <div class="tab" data-cat="veggie" onclick="switchTab('veggie')">
+            🥬 素菜 <span class="count" id="countVeggie">0</span>
+        </div>
+        <div class="tab" data-cat="soup" onclick="switchTab('soup')">
+            🍲 汤 <span class="count" id="countSoup">0</span>
+        </div>
+    </div>
+
+    <!-- Dish List -->
+    <div class="list-container">
+        <div class="dish-list" id="dishList"></div>
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📋</div>
+            <p>菜单还是空的呢～<br>点击右下角 <b>+</b> 来添加第一道菜吧！</p>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="openModal()" title="添加菜品">+</button>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModalOutside(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h2 id="modalTitle">➕ 添加菜品</h2>
+
+            <div class="form-group">
+                <label>菜品名称 *</label>
+                <input type="text" id="dishName" placeholder="例如：红烧排骨" maxlength="20" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>分类 *</label>
+                <div class="cat-selector">
+                    <div class="cat-option selected" data-cat="meat" onclick="selectCat('meat')">🥩 荤菜</div>
+                    <div class="cat-option" data-cat="veggie" onclick="selectCat('veggie')">🥬 素菜</div>
+                    <div class="cat-option" data-cat="soup" onclick="selectCat('soup')">🍲 汤</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>图标</label>
+                <div class="emoji-picker" id="emojiPicker"></div>
+            </div>
+
+            <div class="form-group">
+                <label>备注（选填）</label>
+                <textarea id="dishNote" placeholder="例如：少放辣、多放香菜…" maxlength="100"></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveDish()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // ===== 家庭菜单 - GitHub Pages + localStorage 混合架构 =====
+        // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
+        // localStorage → 家人自己添加的菜 + 所有"想吃"标记
+
+        const STORE_KEY = 'fm_dishes';
+        const WANT_KEY = 'fm_wants';
+        const SYNC_KEY = 'fm_last_sync';
+
+        const DEFAULT_EMOJIS = {
+            meat: ['🥩','🍗','🍖','🥓','🦐','🐟','🐔','🦆','🐷','🐮','🦀','🦑','🍤','🥘','🍳'],
+            veggie: ['🥬','🥒','🥦','🍅','🍆','🌶️','🧄','🧅','🥕','🌽','🍄','🫑','🥔','🫘','🥗'],
+            soup: ['🍲','🥣','🫕','🍜','🥘','🍵','🫘']
+        };
+
+        let dishes = [];
+        let wants = {};
+        let currentTab = 'all';
+        let editingId = null;
+        let selectedCat = 'meat';
+        let selectedEmoji = '';
+
+        // ===== Storage helpers =====
+        function loadStore() {
+            try {
+                dishes = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
+                wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
+            } catch { dishes = []; wants = {}; }
+        }
+
+        function saveStore() {
+            localStorage.setItem(STORE_KEY, JSON.stringify(dishes));
+            localStorage.setItem(WANT_KEY, JSON.stringify(wants));
+        }
+
+        // ===== Sync: 从 data.json 拉取官方菜库，合并到本地 =====
+        async function syncFromServer() {
+            try {
+                const res = await fetch('/data.json', { cache: 'no-cache' });
+                if (!res.ok) return;
+                const serverDishes = await res.json();
+                if (!Array.isArray(serverDishes)) return;
+
+                const localIds = new Set(dishes.map(d => d.id));
+                let newCount = 0;
+
+                serverDishes.forEach(sd => {
+                    if (!localIds.has(sd.id)) {
+                        dishes.push({
+                            id: sd.id,
+                            name: sd.name,
+                            cat: sd.cat,
+                            emoji: sd.emoji || '',
+                            note: sd.note || '',
+                            fromServer: true,
+                            createdAt: sd.createdAt || Date.now(),
+                        });
+                        localIds.add(sd.id);
+                        newCount++;
+                    }
+                });
+
+                if (newCount > 0) {
+                    saveStore();
+                    console.log(`🆕 从菜库同步了 ${newCount} 道新菜`);
+                }
+            } catch (e) {
+                // 离线或网络错误，使用本地数据
+                console.log('📡 离线模式，使用本地数据');
+            }
+        }
+
+        async function initData() {
+            loadStore();
+            await syncFromServer();
+            renderAll();
+        }
+
+        // ===== Render =====
+        function getFilteredDishes() {
+            if (currentTab === 'all') return dishes;
+            return dishes.filter(d => d.cat === currentTab);
+        }
+
+        function getWantList(dishId) {
+            return wants[dishId] || [];
+        }
+
+        function renderAll() {
+            renderStats();
+            renderTabs();
+            renderList();
+        }
+
+        function renderStats() {
+            document.getElementById('statAll').textContent = dishes.length;
+            document.getElementById('statMeat').textContent = dishes.filter(d => d.cat === 'meat').length;
+            document.getElementById('statVeggie').textContent = dishes.filter(d => d.cat === 'veggie').length;
+            document.getElementById('statSoup').textContent = dishes.filter(d => d.cat === 'soup').length;
+        }
+
+        function renderTabs() {
+            document.getElementById('countAll').textContent = dishes.length;
+            document.getElementById('countMeat').textContent = dishes.filter(d => d.cat === 'meat').length;
+            document.getElementById('countVeggie').textContent = dishes.filter(d => d.cat === 'veggie').length;
+            document.getElementById('countSoup').textContent = dishes.filter(d => d.cat === 'soup').length;
+
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.cat === currentTab);
+            });
+        }
+
+        function renderList() {
+            const list = document.getElementById('dishList');
+            const empty = document.getElementById('emptyState');
+            const filtered = getFilteredDishes();
+
+            if (filtered.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            list.innerHTML = filtered.map(d => {
+                const wantList = getWantList(d.id);
+                const wantedClass = wantList.length > 0 ? 'wanted' : '';
+                const tooltip = wantList.length > 0
+                    ? `${wantList.join('、')} 想吃`
+                    : '点击标记想吃';
+                return `
+                <div class="dish-card ${d.cat}" onclick="toggleWant('${d.id}')">
+                    <div class="dish-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</div>
+                    <div class="dish-info">
+                        <div class="dish-name">${escHtml(d.name)}</div>
+                        ${d.note ? `<div class="dish-note">${escHtml(d.note)}</div>` : ''}
+                    </div>
+                    <div class="dish-want ${wantedClass}" onclick="event.stopPropagation(); toggleWant('${d.id}')" title="${escHtml(tooltip)}">
+                        ❤️ <span class="want-count">${wantList.length}</span>
+                    </div>
+                    <button class="dish-delete" onclick="event.stopPropagation(); deleteDish('${d.id}')" title="删除">✕</button>
+                </div>`;
+            }).join('');
+        }
+
+        function defaultEmojiForCat(cat) {
+            return { meat: '🥩', veggie: '🥬', soup: '🍲' }[cat] || '🍽️';
+        }
+
+        function escHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        // ===== Tab Switching =====
+        function switchTab(cat) {
+            currentTab = cat;
+            renderTabs();
+            renderList();
+        }
+
+        // ===== Want / Unwant =====
+        function toggleWant(dishId) {
+            const current = getWantList(dishId);
+            let promptMsg;
+            if (current.length > 0) {
+                promptMsg = `当前 ${current.join('、')} 想吃这道菜\n\n输入你的名字来标记/取消"想吃"\n（留空则清除所有标记）`;
+            } else {
+                promptMsg = '谁想吃这道菜？\n输入你的名字：';
+            }
+            const name = prompt(promptMsg, '');
+            if (name === null) return;
+
+            if (!name.trim()) {
+                delete wants[dishId];
+            } else {
+                if (!wants[dishId]) wants[dishId] = [];
+                const idx = wants[dishId].indexOf(name.trim());
+                if (idx >= 0) {
+                    wants[dishId].splice(idx, 1);
+                    if (wants[dishId].length === 0) delete wants[dishId];
+                } else {
+                    wants[dishId].push(name.trim());
+                }
+            }
+            saveStore();
+            renderList();
+        }
+
+        // ===== Delete =====
+        function deleteDish(id) {
+            const dish = dishes.find(d => d.id === id);
+            if (!dish) return;
+            if (!confirm(`确定删除「${dish.name}」吗？`)) return;
+            dishes = dishes.filter(d => d.id !== id);
+            delete wants[id];
+            saveStore();
+            renderAll();
+            showToast(`已删除「${dish.name}」`);
+        }
+
+        // ===== Modal =====
+        function openModal(editId) {
+            editingId = editId || null;
+            selectedCat = 'meat';
+            selectedEmoji = '';
+            document.getElementById('dishName').value = '';
+            document.getElementById('dishNote').value = '';
+
+            if (editId) {
+                const dish = dishes.find(d => d.id === editId);
+                if (dish) {
+                    document.getElementById('modalTitle').textContent = '✏️ 编辑菜品';
+                    document.getElementById('dishName').value = dish.name;
+                    document.getElementById('dishNote').value = dish.note || '';
+                    selectedCat = dish.cat;
+                    selectedEmoji = dish.emoji || '';
+                }
+            } else {
+                document.getElementById('modalTitle').textContent = '➕ 添加菜品';
+            }
+
+            updateCatSelector();
+            renderEmojiPicker();
+            document.getElementById('modalOverlay').style.display = 'flex';
+            setTimeout(() => document.getElementById('dishName').focus(), 300);
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            editingId = null;
+        }
+
+        function closeModalOutside(e) {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        }
+
+        function selectCat(cat) {
+            selectedCat = cat;
+            selectedEmoji = '';
+            updateCatSelector();
+            renderEmojiPicker();
+        }
+
+        function updateCatSelector() {
+            document.querySelectorAll('.cat-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.cat === selectedCat);
+            });
+        }
+
+        function renderEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            const emojis = DEFAULT_EMOJIS[selectedCat] || DEFAULT_EMOJIS.meat;
+            picker.innerHTML = emojis.map(e => `
+                <div class="emoji-opt${e === selectedEmoji ? ' selected' : ''}" onclick="selectEmoji('${e}')">${e}</div>
+            `).join('');
+        }
+
+        function selectEmoji(emoji) {
+            selectedEmoji = emoji;
+            renderEmojiPicker();
+        }
+
+        function saveDish() {
+            const name = document.getElementById('dishName').value.trim();
+            if (!name) { showToast('请输入菜品名称'); document.getElementById('dishName').focus(); return; }
+            const note = document.getElementById('dishNote').value.trim();
+
+            if (editingId) {
+                const dish = dishes.find(d => d.id === editingId);
+                if (dish) {
+                    dish.name = name;
+                    dish.cat = selectedCat;
+                    dish.emoji = selectedEmoji;
+                    dish.note = note;
+                }
+            } else {
+                dishes.push({
+                    id: 'u' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                    name,
+                    cat: selectedCat,
+                    emoji: selectedEmoji,
+                    note,
+                    fromServer: false,
+                    createdAt: Date.now(),
+                });
+            }
+
+            saveStore();
+            closeModal();
+            renderAll();
+            showToast(editingId ? '已更新 ✨' : '已添加 🎉');
+        }
+
+        // ===== Toast =====
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        // ===== Keyboard =====
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Enter' && document.getElementById('modalOverlay').style.display === 'flex') {
+                saveDish();
+            }
+        });
+
+        // ===== PWA: Service Worker =====
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+
+        // ===== Init =====
+        initData();
+        renderEmojiPicker();
+    </script>
+</body>
+</html>

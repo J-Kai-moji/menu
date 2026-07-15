@@ -1,20 +1,20 @@
 [
-  {
-    "id": "d001",
-    "name": "广式萝卜牛腩煲",
-    "cat": "meat",
-    "emoji": "🥘",
-    "note": "",
-    "createdAt": 1752624000000,
-    "updatedAt": 1752624000000
-  },
-  {
-    "id": "d002",
-    "name": "豆豉鲮鱼炒油麦菜",
-    "cat": "meat",
-    "emoji": "🐟",
-    "note": "",
-    "createdAt": 1752624000000,
-    "updatedAt": 1752624000000
-  }
+  {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":""},
+  {"id":"d002","name":"豆豉鲮鱼炒油麦菜","cat":"meat","emoji":"🐟","note":""},
+  {"id":"d003","name":"葱姜炒花甲","cat":"meat","emoji":"🦪","note":""},
+  {"id":"d004","name":"黄焖鸡","cat":"meat","emoji":"🍗","note":""},
+  {"id":"d005","name":"海南鸡饭","cat":"meat","emoji":"🐔","note":""},
+  {"id":"d006","name":"汉堡肉盖饭","cat":"meat","emoji":"🍛","note":""},
+  {"id":"d007","name":"三杯鸡","cat":"meat","emoji":"🍗","note":""},
+  {"id":"d008","name":"土豆鸡块","cat":"meat","emoji":"🥔","note":""},
+  {"id":"d009","name":"卤肉饭","cat":"meat","emoji":"🍖","note":""},
+  {"id":"d010","name":"新疆烤包子","cat":"meat","emoji":"🥟","note":""},
+  {"id":"d011","name":"辣椒炒鸡","cat":"meat","emoji":"🌶️","note":""},
+  {"id":"d012","name":"筋头巴脑炖土豆","cat":"meat","emoji":"🥘","note":""},
+  {"id":"d013","name":"白菜炖豆腐","cat":"veggie","emoji":"🥬","note":""},
+  {"id":"d014","name":"韭菜炒鸡蛋","cat":"veggie","emoji":"🥚","note":""},
+  {"id":"d015","name":"尖椒干豆腐","cat":"veggie","emoji":"🫑","note":""},
+  {"id":"d016","name":"裙带菜牛肉汤","cat":"soup","emoji":"🥣","note":""},
+  {"id":"d017","name":"番茄时蔬汤","cat":"soup","emoji":"🍅","note":""},
+  {"id":"d018","name":"番茄清炖牛肉","cat":"soup","emoji":"🥘","note":""}
 ]

@@ -1105,8 +1105,12 @@
                 const q = searchQuery.toLowerCase();
                 result = result.filter(d => d.name.toLowerCase().includes(q));
             }
-            // 按创建时间倒序：最新加的排在前面
-            result.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            // 排序规则：用户自增(u开头) > 服务器菜品(d开头，数字越大越靠前)
+            result.sort((a, b) => {
+                const aNum = a.id.startsWith('d') ? parseInt(a.id.slice(1)) : 9999;
+                const bNum = b.id.startsWith('d') ? parseInt(b.id.slice(1)) : 9999;
+                return bNum - aNum;
+            });
             return result;
         }
 

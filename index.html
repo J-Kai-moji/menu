@@ -1341,6 +1341,8 @@
             showToast('已加入今日菜单 ✅');
         }
 
+        let lastLocalChange = 0; // 防止轮询覆盖本地刚做的修改
+
         // ===== Today Menu: 红心加入/移除今日菜单 =====
         async function toggleToday(dishId) {
             const idx = todayMenu.indexOf(dishId);
@@ -1350,6 +1352,7 @@
             } else {
                 todayMenu.splice(idx, 1);
             }
+            lastLocalChange = Date.now();
             saveToday();
             renderList();
             renderTodayIfActive();
@@ -1375,6 +1378,8 @@
                 loadSharedToday().then(() => renderToday());
                 // 每 10 秒自动检查更新
                 todayPollTimer = setInterval(async () => {
+                    // 本地刚修改过，30秒内不覆盖（等服务器同步完成）
+                    if (Date.now() - lastLocalChange < 30000) return;
                     const before = todayMenu.join(',');
                     await loadSharedToday();
                     if (todayMenu.join(',') !== before) renderToday();

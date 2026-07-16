@@ -1360,12 +1360,7 @@
             renderTodayIfActive();
             // 同步到 GitHub
             if (ghToken) {
-                const ok = await syncTodayToGitHub();
-                if (ok) {
-                    await loadSharedToday();
-                    renderList();
-                    renderTodayIfActive();
-                }
+                await syncTodayToGitHub();
             } else {
                 showToast(added ? '已加入今日菜单（仅本机）' : '已移除（仅本机）');
             }

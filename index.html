@@ -828,7 +828,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '64';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '65';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1083,6 +1083,16 @@
         async function initData() {
             ensureSeedData();           // 内嵌种子数据，保证一定有菜
             loadStore();                 // 加载本地（含种子数据 + 用户自增）
+            // 去重：同ID只保留一份，同ID优先保留 fromServer 的
+            const deduped = [];
+            const seen = new Set();
+            dishes.forEach(d => {
+                if (seen.has(d.id)) return;
+                seen.add(d.id);
+                deduped.push(d);
+            });
+            dishes = deduped;
+            saveStore();
             await syncFromServer();      // 拉取服务器新增菜品
             await loadSharedToday();     // 拉取共享今日菜单
             renderAll();

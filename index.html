@@ -827,7 +827,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '61';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '62';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -840,11 +840,15 @@
         (function checkVersion() {
             const stored = localStorage.getItem(VERSION_KEY);
             if (stored !== APP_VERSION) {
-                // 保留今日菜单，清空菜品缓存强制重新同步
+                // 保留 Token、今日菜单，清空菜品缓存强制重新同步
                 const today = localStorage.getItem(TODAY_KEY);
+                const token = localStorage.getItem(GH_TOKEN_KEY);
                 localStorage.clear();
                 if (today) localStorage.setItem(TODAY_KEY, today);
+                if (token) localStorage.setItem(GH_TOKEN_KEY, token);
                 localStorage.setItem(VERSION_KEY, APP_VERSION);
+                // 恢复全局变量
+                if (token) ghToken = token;
             }
         })();
 

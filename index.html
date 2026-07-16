@@ -710,7 +710,7 @@
     <!-- Header -->
     <div class="header">
         <h1>🏠 家庭菜单</h1>
-        <div class="subtitle">今天想吃什么？</div>
+        <div class="subtitle" id="headerSubtitle">今天想吃什么？</div>
     </div>
 
     <!-- Tabs -->
@@ -832,6 +832,9 @@
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
         const VERSION_KEY = 'fm_version';
+        const GH_TOKEN_KEY = 'fm_gh_token';
+        const GH_REPO = 'j-kai-moji/menu';
+        let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
 
         // 版本检测：新版本自动清旧数据
         (function checkVersion() {
@@ -1100,8 +1103,9 @@
                 const inToday = todayMenu.includes(d.id);
                 const wantedClass = inToday ? 'wanted' : '';
                 const tooltip = inToday ? '已加入今日菜单，点击取消' : '点击加入今日菜单';
+                const localBadge = d.fromServer ? '' : '<span class="tag" style="background:#fef3c7;color:#b45309;margin-left:2px">📱本机</span>';
                 return `
-                <div class="dish-card ${d.cat}">
+                <div class="dish-card ${d.cat}" onclick="openModal('${d.id}')" title="点击编辑">
                     <div class="dish-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</div>
                     <div class="dish-info">
                         <div class="dish-name">
@@ -1110,6 +1114,7 @@
                                 const cls = { '海鲜': 'seafood', '辣': 'spicy', '凉菜': 'cold' }[t] || '';
                                 return `<span class="tag tag-${cls}">${t}</span>`;
                             }).join('')}
+                            ${localBadge}
                         </div>
                         ${d.note ? `<div class="dish-note">${escHtml(d.note)}</div>` : ''}
                     </div>
@@ -1367,6 +1372,24 @@
             renderEmojiPicker();
         }
 
+        // ===== 自动打标签：根据菜名关键词匹配 =====
+        function autoTag(name) {
+            const tags = [];
+            // 海鲜
+            if (/虾|鱼|蟹|贝|蚝|蚬|鲍|鲈|黄鱼|花甲|鱿|鳗|鲳|蛏|扇贝|海蛎|蛤|螺|蛎|蝤|蚶|蛑|鲅|鲨|鲮|鲻|鲐|鲣|鲥|鲦|鲧|鳊|鳁|鳇|鲉|鲓|鲕|鲖|鲗|鲙|鲝|鲞|鲟|鲠|鲡|鲢|鲣|鲤|鲦|鲩|鲪|鲬|鲭|鲮|鲯|鲱|鲳|鲷|鲸|鲺|鲻|鲼|鲽|鲾|鲿|鳀|鳂|鳃|鳈|鳉|鳊|鳋|鳌|鳍|鳎|鳏|鳐|鳑|鳒|鳓|鳔|鳕|鳘|鳙|鳛|鳜|鳝|鳟|鳠|鳣|鳤|龙利|多宝|石斑|带鱼|鱿鱼|墨鱼|章鱼|海参|海胆|海蜇|紫菜|海带|裙带|蛤蜊|蛏子|生蚝|牡蛎|青口|淡菜|象拔蚌|北极贝|三文|金枪|鳕鱼/i.test(name)) {
+                tags.push('海鲜');
+            }
+            // 辣
+            if (/辣|麻辣|香辣|辣椒|剁椒|泡椒|红油|水煮|酸辣/i.test(name)) {
+                tags.push('辣');
+            }
+            // 凉菜
+            if (/凉拌|拌|沙拉|老虎菜|蒜泥|卤|酱香肘|皮冻/i.test(name)) {
+                tags.push('凉菜');
+            }
+            return tags;
+        }
+
         function saveDish() {
             const name = document.getElementById('dishName').value.trim();
             if (!name) { showToast('请输入菜品名称'); document.getElementById('dishName').focus(); return; }
@@ -1386,6 +1409,7 @@
                     dish.cat = selectedCat;
                     dish.emoji = selectedEmoji;
                     dish.note = note;
+                    dish.tags = autoTag(name);
                 }
             } else {
                 dishes.push({
@@ -1394,6 +1418,7 @@
                     cat: selectedCat,
                     emoji: selectedEmoji,
                     note,
+                    tags: autoTag(name),
                     fromServer: false,
                     createdAt: Date.now(),
                 });
@@ -1402,8 +1427,174 @@
             saveStore();
             closeModal();
             renderAll();
-            showToast(editingId ? '已更新 ✨' : '已添加 🎉');
+
+            // 自动同步到 GitHub
+            if (!editingId && ghToken) {
+                syncNewDishToGitHub(name, selectedCat, selectedEmoji, note);
+            } else if (!editingId && !ghToken) {
+                showToast('已添加 🎉（仅本机）');
+            } else if (editingId && ghToken) {
+                syncEditToGitHub(editingId);
+            } else {
+                showToast(editingId ? '已更新 ✨' : '已添加 🎉');
+            }
         }
+
+        // ===== GitHub 自动同步 =====
+        async function syncNewDishToGitHub(name, cat, emoji, note) {
+            showToast('☁️ 正在同步到服务器...');
+            try {
+                // 1. 拉取当前 data.json
+                const url = `https://api.github.com/repos/${GH_REPO}/contents/data.json`;
+                const res = await fetch(url, {
+                    headers: { Authorization: 'Bearer ' + ghToken, Accept: 'application/vnd.github.v3+json' }
+                });
+                if (!res.ok) throw new Error('拉取失败: ' + res.status);
+                const file = await res.json();
+                const content = JSON.parse(atob(file.content));
+                const sha = file.sha;
+
+                // 2. 生成新 ID
+                const maxId = content.reduce((max, d) => {
+                    const n = parseInt(d.id.replace('d', ''));
+                    return n > max ? n : max;
+                }, 0);
+                const newId = 'd' + String(maxId + 1).padStart(3, '0');
+
+                // 3. 追加新菜品
+                const newDish = {
+                    id: newId, name, cat, emoji: emoji || '', note: note || '',
+                    tags: autoTag(name)
+                };
+                content.push(newDish);
+
+                // 4. 提交到 GitHub
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: 'Bearer ' + ghToken,
+                        Accept: 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `新增菜品：${name}（${newId}）`,
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+                        sha: sha
+                    })
+                });
+                if (!putRes.ok) throw new Error('提交失败: ' + putRes.status);
+
+                // 5. 更新本地：把 ID 改为服务端 ID，标记为已同步
+                const localDish = dishes.find(d => d.name === name && d.fromServer === false && !d.id.startsWith('d'));
+                if (localDish) {
+                    localDish.id = newId;
+                    localDish.fromServer = true;
+                    saveStore();
+                    renderAll();
+                }
+                showToast('✅ 已同步上线，家人可见！');
+            } catch (e) {
+                console.error('同步失败:', e);
+                showToast('⚠️ 同步失败，仅保存在本机');
+            }
+        }
+
+        async function syncEditToGitHub(editId) {
+            const dish = dishes.find(d => d.id === editId);
+            if (!dish) return;
+            showToast('☁️ 正在同步到服务器...');
+            try {
+                const url = `https://api.github.com/repos/${GH_REPO}/contents/data.json`;
+                const res = await fetch(url, {
+                    headers: { Authorization: 'Bearer ' + ghToken, Accept: 'application/vnd.github.v3+json' }
+                });
+                if (!res.ok) throw new Error('拉取失败: ' + res.status);
+                const file = await res.json();
+                const content = JSON.parse(atob(file.content));
+                const sha = file.sha;
+
+                // 更新对应菜品
+                const idx = content.findIndex(d => d.id === editId);
+                if (idx >= 0) {
+                    content[idx].name = dish.name;
+                    content[idx].cat = dish.cat;
+                    content[idx].emoji = dish.emoji;
+                    content[idx].note = dish.note || '';
+                    content[idx].tags = dish.tags || [];
+                } else {
+                    // 本地菜品还没在服务端，追加
+                    content.push({
+                        id: editId, name: dish.name, cat: dish.cat,
+                        emoji: dish.emoji || '', note: dish.note || '', tags: dish.tags || []
+                    });
+                }
+
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: 'Bearer ' + ghToken,
+                        Accept: 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `编辑菜品：${dish.name}（${editId}）`,
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+                        sha: sha
+                    })
+                });
+                if (!putRes.ok) throw new Error('提交失败: ' + putRes.status);
+
+                if (!dish.fromServer) {
+                    dish.fromServer = true;
+                    saveStore();
+                    renderAll();
+                }
+                showToast('✅ 已同步上线！');
+            } catch (e) {
+                console.error('同步失败:', e);
+                showToast('⚠️ 同步失败，仅保存在本机');
+            }
+        }
+
+        // ===== 管理员设置 Token（长按标题 3 秒） =====
+        let headerTapTimer = null;
+        document.querySelector('.header').addEventListener('mousedown', () => {
+            headerTapTimer = setTimeout(() => {
+                const token = prompt('🔑 输入 GitHub Personal Access Token\n（用于自动同步菜品到服务器）：\n\n获取方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）\n\n留空则关闭自动同步', ghToken);
+                if (token !== null) {
+                    ghToken = token.trim();
+                    if (ghToken) {
+                        localStorage.setItem(GH_TOKEN_KEY, ghToken);
+                        showToast('✅ Token 已保存，自动同步已开启');
+                    } else {
+                        localStorage.removeItem(GH_TOKEN_KEY);
+                        ghToken = '';
+                        showToast('🔒 自动同步已关闭');
+                    }
+                }
+            }, 3000);
+        });
+        document.querySelector('.header').addEventListener('mouseup', () => clearTimeout(headerTapTimer));
+        document.querySelector('.header').addEventListener('mouseleave', () => clearTimeout(headerTapTimer));
+        // 移动端 touch 事件
+        document.querySelector('.header').addEventListener('touchstart', (e) => {
+            headerTapTimer = setTimeout(() => {
+                const token = prompt('🔑 输入 GitHub Personal Access Token\n\n获取方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）\n\n留空则关闭自动同步', ghToken);
+                if (token !== null) {
+                    ghToken = token.trim();
+                    if (ghToken) {
+                        localStorage.setItem(GH_TOKEN_KEY, ghToken);
+                        showToast('✅ Token 已保存，自动同步已开启');
+                    } else {
+                        localStorage.removeItem(GH_TOKEN_KEY);
+                        ghToken = '';
+                        showToast('🔒 自动同步已关闭');
+                    }
+                }
+            }, 3000);
+        }, { passive: true });
+        document.querySelector('.header').addEventListener('touchend', () => clearTimeout(headerTapTimer));
+        document.querySelector('.header').addEventListener('touchcancel', () => clearTimeout(headerTapTimer));
 
         // ===== Toast =====
         function showToast(msg) {
@@ -1440,8 +1631,22 @@
         // ===== Init =====
         initData().then(() => {
             console.log('✅ 菜单加载完成，共 ' + dishes.length + ' 道菜');
+            // 更新 header 同步状态
+            updateSyncStatus();
         });
         renderEmojiPicker();
+
+        function updateSyncStatus() {
+            const sub = document.getElementById('headerSubtitle');
+            const localCount = dishes.filter(d => !d.fromServer).length;
+            if (!ghToken) {
+                sub.textContent = localCount > 0 ? `今天想吃什么？（${localCount}道本地菜未同步）` : '今天想吃什么？';
+                sub.style.color = localCount > 0 ? '#ffe0a0' : '';
+            } else {
+                sub.textContent = localCount > 0 ? `☁️ ${localCount}道待同步，编辑后自动推送` : '☁️ 自动同步已开启';
+                sub.style.color = '';
+            }
+        }
     </script>
 </body>
 </html>

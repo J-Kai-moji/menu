@@ -831,7 +831,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '69';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '70';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1122,17 +1122,19 @@
                 console.log('📅 今日菜单服务器数据:', JSON.stringify(data), '本地date:', dateStr);
 
                 if (data.date === dateStr && Array.isArray(data.dishes)) {
-                    // 合并服务器数据：去重添加
                     const existing = new Set(todayMenu);
-                    let changed = false;
+                    let newItems = 0;
                     data.dishes.forEach(id => {
                         if (!existing.has(id)) {
                             todayMenu.push(id);
                             existing.add(id);
-                            changed = true;
+                            newItems++;
                         }
                     });
-                    if (changed) { saveToday(); console.log('📅 今日菜单已更新:', todayMenu); }
+                    if (newItems > 0) {
+                        saveToday();
+                        showToast('📥 从服务器同步了' + newItems + '道菜');
+                    }
                 } else if (data.date !== dateStr) {
                     // 新的一天，重置
                     todayMenu = [];

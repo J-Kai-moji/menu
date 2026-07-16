@@ -942,5 +942,29 @@
     "emoji": "🍢",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d116",
+    "name": "三鲜汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d117",
+    "name": "红烧鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d118",
+    "name": "油呲干豆腐",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
   }
 ]

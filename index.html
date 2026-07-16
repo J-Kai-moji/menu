@@ -1122,18 +1122,23 @@
                 console.log('📅 今日菜单服务器数据:', JSON.stringify(data), '本地date:', dateStr);
 
                 if (data.date === dateStr && Array.isArray(data.dishes)) {
-                    const existing = new Set(todayMenu);
-                    let newItems = 0;
-                    data.dishes.forEach(id => {
-                        if (!existing.has(id)) {
-                            todayMenu.push(id);
-                            existing.add(id);
-                            newItems++;
+                    const serverList = data.dishes;
+                    const localList = todayMenu.join(',');
+                    const newList = serverList.join(',');
+                    if (localList !== newList) {
+                        if (ghToken) {
+                            // 有Token：以服务器为准替换
+                            todayMenu = serverList.slice();
+                        } else {
+                            // 无Token：合并服务器数据，保留本地未同步的
+                            const set = new Set(todayMenu);
+                            serverList.forEach(id => { if (!set.has(id)) { todayMenu.push(id); set.add(id); } });
+                            // 同时删除服务器已移除的
+                            const serverSet = new Set(serverList);
+                            todayMenu = todayMenu.filter(id => serverSet.has(id));
                         }
-                    });
-                    if (newItems > 0) {
                         saveToday();
-                        showToast('📥 从服务器同步了' + newItems + '道菜');
+                        showToast('📥 已同步（共' + todayMenu.length + '道）');
                     }
                 } else if (data.date !== dateStr) {
                     // 新的一天，重置

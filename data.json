@@ -822,5 +822,117 @@
     "emoji": "🍚",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d101",
+    "name": "老北京爆肚",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d102",
+    "name": "铁锅靠大鹅",
+    "cat": "meat",
+    "emoji": "🦆",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d103",
+    "name": "尖椒炒肥肠",
+    "cat": "meat",
+    "emoji": "🌶️",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d104",
+    "name": "烀猪蹄",
+    "cat": "meat",
+    "emoji": "🐷",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d105",
+    "name": "香煎鲳鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d106",
+    "name": "清蒸鲈鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d107",
+    "name": "辣椒酱牛肉",
+    "cat": "meat",
+    "emoji": "🌶️",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d108",
+    "name": "小鸡炖蘑菇",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d109",
+    "name": "白菜猪肉炖粉条",
+    "cat": "meat",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d110",
+    "name": "排骨炖豆角",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d111",
+    "name": "斋菜煲",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d112",
+    "name": "炝干豆腐丝",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d113",
+    "name": "葱烧鸡蛋",
+    "cat": "veggie",
+    "emoji": "🥚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d114",
+    "name": "树椒土豆丝",
+    "cat": "veggie",
+    "emoji": "🌶️",
+    "note": "",
+    "tags": ["辣"]
   }
 ]

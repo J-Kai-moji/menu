@@ -966,5 +966,29 @@
     "emoji": "🫘",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d119",
+    "name": "红焖干豆腐",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d120",
+    "name": "泰式打抛饭",
+    "cat": "staple",
+    "emoji": "🍛",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d121",
+    "name": "铁锅炖杂鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
   }
 ]

@@ -934,5 +934,13 @@
     "emoji": "🌶️",
     "note": "",
     "tags": ["辣"]
+  },
+  {
+    "id": "d115",
+    "name": "关东煮",
+    "cat": "staple",
+    "emoji": "🍢",
+    "note": "",
+    "tags": []
   }
 ]

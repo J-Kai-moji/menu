@@ -1389,9 +1389,15 @@
         }
 
         async function refreshToday() {
+            const before = todayMenu.join(',');
             showToast('🔄 同步中...');
             await loadSharedToday();
             renderToday();
+            if (todayMenu.join(',') !== before) {
+                showToast('✅ 今日菜单已更新');
+            } else {
+                showToast('✅ 已是最新');
+            }
         }
 
         function renderToday() {

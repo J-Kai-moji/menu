@@ -1825,10 +1825,16 @@
             });
         }
 
+        // ===== 从后台切回时自动刷新今日菜单 =====
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && currentPage === 'today') {
+                loadSharedToday().then(() => renderToday());
+            }
+        });
+
         // ===== Init =====
         initData().then(() => {
             console.log('✅ 菜单加载完成，共 ' + dishes.length + ' 道菜');
-            // 更新 header 同步状态
             updateSyncStatus();
         });
         renderEmojiPicker();

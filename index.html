@@ -1339,14 +1339,48 @@
         function deleteDish(id) {
             const dish = dishes.find(d => d.id === id);
             if (!dish) return;
-            if (!confirm(`确定删除「${dish.name}」吗？`)) return;
+            if (!confirm(`确定删除「${dish.name}」吗？\n\n本地删除：刷新后恢复\n服务器删除：永久删除，所有人同步`)) return;
+            const fromServer = dish.fromServer;
+            // 本地删除
             dishes = dishes.filter(d => d.id !== id);
             delete wants[id];
             todayMenu = todayMenu.filter(tid => tid !== id);
             saveStore();
             saveToday();
             renderAll();
-            showToast(`已删除「${dish.name}」`);
+            // 服务器删除
+            if (fromServer && ghToken) {
+                syncDeleteFromGitHub(id, dish.name);
+            }
+            showToast(`已删除「${dish.name}」` + (fromServer && ghToken ? '（含服务器）' : ''));
+        }
+
+        async function syncDeleteFromGitHub(id, name) {
+            try {
+                const apiHeaders = {
+                    Authorization: 'Bearer ' + ghToken,
+                    Accept: 'application/vnd.github+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
+                };
+                const url = `https://api.github.com/repos/${GH_REPO}/contents/data.json`;
+                const res = await fetch(url, { headers: apiHeaders });
+                if (!res.ok) return;
+                const file = await res.json();
+                const content = JSON.parse(base64Decode(file.content));
+                const idx = content.findIndex(d => d.id === id);
+                if (idx < 0) return;
+                content.splice(idx, 1);
+                const newContent = JSON.stringify(content, null, 2) + '\n';
+                await fetch(url, {
+                    method: 'PUT',
+                    headers: { ...apiHeaders, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `删除菜品：${name}`,
+                        content: base64Encode(newContent),
+                        sha: file.sha
+                    })
+                });
+            } catch (e) { /* 静默 */ }
         }
 
         // ===== Modal =====

@@ -840,19 +840,14 @@
         const GH_REPO = 'J-Kai-moji/menu';
         let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
 
-        // 版本检测：新版本自动清旧数据
+        // 版本检测：新版本清除菜品缓存强制重新同步（不碰Token和今日菜单）
         (function checkVersion() {
             const stored = localStorage.getItem(VERSION_KEY);
             if (stored !== APP_VERSION) {
-                // 保留 Token、今日菜单，清空菜品缓存强制重新同步
-                const today = localStorage.getItem(TODAY_KEY);
-                const token = localStorage.getItem(GH_TOKEN_KEY);
-                localStorage.clear();
-                if (today) localStorage.setItem(TODAY_KEY, today);
-                if (token) localStorage.setItem(GH_TOKEN_KEY, token);
+                // 只清除菜品相关数据，保留 Token、今日菜单
+                localStorage.removeItem(STORE_KEY);
+                localStorage.removeItem(WANT_KEY);
                 localStorage.setItem(VERSION_KEY, APP_VERSION);
-                // 恢复全局变量
-                if (token) ghToken = token;
             }
         })();
 

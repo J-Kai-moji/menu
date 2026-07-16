@@ -1105,10 +1105,26 @@
         // ===== 共享今日菜单 =====
         async function loadSharedToday() {
             try {
-                // 优先 raw（即时），fallback Pages
-                let res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
-                if (!res.ok) {
-                    res = await fetch('/today.json?t=' + Date.now(), { cache: 'no-cache' });
+                let res;
+                if (ghToken) {
+                    // 有Token：用API直接读（无延迟，与写入一致）
+                    const apiHeaders = {
+                        Authorization: 'Bearer ' + ghToken,
+                        Accept: 'application/vnd.github+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    };
+                    res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/today.json?t=` + Date.now(), { headers: apiHeaders, cache: 'no-cache' });
+                    if (res.ok) {
+                        const file = await res.json();
+                        res = { ok: true, json: () => Promise.resolve(JSON.parse(base64Decode(file.content))) };
+                    }
+                }
+                if (!res || !res.ok) {
+                    // Fallback: raw CDN 或 GitHub Pages
+                    res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
+                    if (!res.ok) {
+                        res = await fetch('/today.json?t=' + Date.now(), { cache: 'no-cache' });
+                    }
                 }
                 if (!res.ok) { console.log('📡 today.json fetch 失败:', res.status); return; }
                 const data = await res.json();
@@ -1379,7 +1395,7 @@
                 // 每 10 秒自动检查更新
                 todayPollTimer = setInterval(async () => {
                     // 本地刚修改过，30秒内不覆盖（等服务器同步完成）
-                    if (Date.now() - lastLocalChange < 30000) return;
+                    if (Date.now() - lastLocalChange < 5000) return;
                     const before = todayMenu.join(',');
                     await loadSharedToday();
                     if (todayMenu.join(',') !== before) renderToday();

@@ -827,7 +827,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '60';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '61';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1518,10 +1518,14 @@
 
         // ===== GitHub 自动同步 =====
         function base64Encode(str) {
-            // 使用 TextEncoder → Uint8Array → 逐字节转 base64
             const bytes = new TextEncoder().encode(str);
             const binString = Array.from(bytes, b => String.fromCharCode(b)).join('');
             return btoa(binString);
+        }
+        function base64Decode(b64) {
+            const binString = atob(b64);
+            const bytes = Uint8Array.from(binString, c => c.charCodeAt(0));
+            return new TextDecoder().decode(bytes);
         }
 
         async function syncNewDishToGitHub(name, cat, emoji, note) {
@@ -1541,7 +1545,7 @@
                     throw new Error(err.message || 'HTTP ' + res.status);
                 }
                 const file = await res.json();
-                const content = JSON.parse(atob(file.content));
+                const content = JSON.parse(base64Decode(file.content));
                 const sha = file.sha;
 
                 // 2. 生成新 ID
@@ -1607,7 +1611,7 @@
                     throw new Error(err.message || 'HTTP ' + res.status);
                 }
                 const file = await res.json();
-                const content = JSON.parse(atob(file.content));
+                const content = JSON.parse(base64Decode(file.content));
                 const sha = file.sha;
 
                 // 更新对应菜品

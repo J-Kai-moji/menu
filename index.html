@@ -827,7 +827,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '59';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '60';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1049,12 +1049,84 @@
             ensureSeedData();           // 内嵌种子数据，保证一定有菜
             loadStore();                 // 加载本地（含种子数据 + 用户自增）
             await syncFromServer();      // 拉取服务器新增菜品
+            await loadSharedToday();     // 拉取共享今日菜单
             renderAll();
             // 更新今日菜单徽标
             if (todayMenu.length > 0) {
                 const badge = document.getElementById('todayBadge');
                 badge.style.display = 'flex';
                 badge.textContent = todayMenu.length;
+            }
+        }
+
+        // ===== 共享今日菜单 =====
+        async function loadSharedToday() {
+            try {
+                const res = await fetch('/today.json?t=' + Date.now(), { cache: 'no-cache' });
+                if (!res.ok) return;
+                const data = await res.json();
+                const today = new Date();
+                const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+                if (data.date === dateStr) {
+                    // 今天的共享菜单：合并到本地（去重）
+                    if (Array.isArray(data.dishes)) {
+                        const existing = new Set(todayMenu);
+                        data.dishes.forEach(id => { if (!existing.has(id)) { todayMenu.push(id); existing.add(id); } });
+                        saveToday();
+                        // 清理已删除的菜品引用
+                        todayMenu = todayMenu.filter(id => dishes.some(d => d.id === id));
+                        saveToday();
+                    }
+                } else if (data.date && data.date !== dateStr) {
+                    // 新的一天，重置
+                    todayMenu = [];
+                    saveToday();
+                    // 同时推送到 GitHub 重置
+                    if (ghToken) syncTodayToGitHub();
+                }
+            } catch (e) {
+                console.log('📡 今日菜单离线模式');
+            }
+        }
+
+        async function syncTodayToGitHub() {
+            if (!ghToken) return;
+            try {
+                const apiHeaders = {
+                    Authorization: 'Bearer ' + ghToken,
+                    Accept: 'application/vnd.github+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
+                };
+                const url = `https://api.github.com/repos/${GH_REPO}/contents/today.json`;
+
+                // 获取当前 SHA
+                const res = await fetch(url, { headers: apiHeaders });
+                let sha = null;
+                if (res.ok) {
+                    const file = await res.json();
+                    sha = file.sha;
+                }
+
+                const today = new Date();
+                const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                const newContent = JSON.stringify({ date: dateStr, dishes: todayMenu }) + '\n';
+
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: { ...apiHeaders, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `更新今日菜单（${todayMenu.length}道菜）`,
+                        content: base64Encode(newContent),
+                        ...(sha ? { sha } : {})
+                    })
+                });
+                if (!putRes.ok) {
+                    const err = await putRes.json().catch(() => ({}));
+                    console.error('今日菜单同步失败:', err);
+                }
+            } catch (e) {
+                console.error('今日菜单同步失败:', e);
             }
         }
 
@@ -1199,6 +1271,7 @@
                 saveToday();
                 renderList();
                 renderTodayIfActive();
+                syncTodayToGitHub();
             }
             const overlay = document.getElementById('pickOverlay');
             if (overlay) overlay.remove();
@@ -1216,6 +1289,8 @@
             saveToday();
             renderList();
             renderTodayIfActive();
+            // 同步到 GitHub
+            syncTodayToGitHub();
         }
 
         // ===== Page Switching =====
@@ -1294,6 +1369,7 @@
             saveToday();
             renderList();
             renderToday();
+            syncTodayToGitHub();
         }
 
         // ===== Delete =====

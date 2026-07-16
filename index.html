@@ -738,6 +738,7 @@
         <input type="text" id="searchInput" placeholder="搜索菜品..." autocomplete="off" oninput="onSearch()">
         <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
         <button class="random-btn" onclick="randomPick()" title="随机选一道">🎲</button>
+        <button class="random-btn" id="syncBtn" onclick="forceSync()" title="同步最新菜库" style="margin-left:4px;font-size:14px">🔄</button>
     </div>
 
     <!-- Dish List -->
@@ -827,7 +828,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '62';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '63';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1005,20 +1006,24 @@
         }
 
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
-        async function syncFromServer() {
+        async function syncFromServer(showMsg) {
             try {
-                const res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
+                // 优先从 raw.githubusercontent.com 拉取（即时更新），fallback 到 GitHub Pages
+                let res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json?t=' + Date.now(), { cache: 'no-cache' });
+                if (!res.ok) {
+                    res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
+                }
                 if (!res.ok) return;
                 const serverDishes = await res.json();
                 if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
                 let changed = false;
+                let newCount = 0;
 
                 // 确保所有服务器菜品都在本地，且信息是最新的
                 serverDishes.forEach(sd => {
                     const existing = dishes.find(d => d.id === sd.id);
                     if (existing) {
-                        // 更新已有菜品（分类可能被调整）
                         if (sd.cat && existing.cat !== sd.cat) { existing.cat = sd.cat; changed = true; }
                         if (sd.name && existing.name !== sd.name) { existing.name = sd.name; changed = true; }
                         if (sd.emoji !== undefined && existing.emoji !== sd.emoji) { existing.emoji = sd.emoji; changed = true; }
@@ -1026,27 +1031,37 @@
                         if (sd.tags !== undefined) { existing.tags = sd.tags; changed = true; }
                     } else {
                         dishes.push({
-                            id: sd.id,
-                            name: sd.name,
-                            cat: sd.cat,
-                            emoji: sd.emoji || '',
-                            note: sd.note || '',
+                            id: sd.id, name: sd.name, cat: sd.cat,
+                            emoji: sd.emoji || '', note: sd.note || '',
                             tags: sd.tags || [],
                             fromServer: true,
                             createdAt: sd.createdAt || Date.now(),
                         });
                         changed = true;
+                        newCount++;
                     }
                 });
 
                 if (changed) {
                     saveStore();
-                    console.log('🆕 菜单已从菜库同步更新');
-                    showToast('🆕 菜单已更新！');
+                    renderAll();
+                    if (showMsg !== false) {
+                        showToast(newCount > 0 ? '🆕 发现 ' + newCount + ' 道新菜！' : '🔄 菜单已同步');
+                    }
+                } else if (showMsg) {
+                    showToast('✅ 已是最新');
                 }
             } catch (e) {
                 console.log('📡 离线模式，使用本地数据');
+                if (showMsg) showToast('📡 网络不可用');
             }
+        }
+
+        async function forceSync() {
+            const btn = document.getElementById('syncBtn');
+            btn.textContent = '⏳';
+            await syncFromServer(true);
+            btn.textContent = '🔄';
         }
 
         async function initData() {

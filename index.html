@@ -1355,9 +1355,10 @@
             renderTodayIfActive();
             // 同步到 GitHub
             if (ghToken) {
-                await syncTodayToGitHub();
+                const ok = await syncTodayToGitHub();
+                showToast(ok ? (added ? '✅ 已添加并同步' : '✅ 已移除并同步') : '⚠️ 同步失败');
             } else {
-                showToast(added ? '已加入今日菜单（仅本机）' : '已移除（仅本机）');
+                showToast(added ? '📱 已添加（仅本机，请设置Token）' : '📱 已移除（仅本机）');
             }
         }
 

@@ -1121,12 +1121,17 @@
                 const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
                 if (data.date === dateStr && Array.isArray(data.dishes)) {
-                    // 以服务器为准，替换本地今日菜单
-                    const serverDishes = data.dishes.filter(id => dishes.some(d => d.id === id));
-                    if (JSON.stringify(todayMenu.sort()) !== JSON.stringify(serverDishes.sort())) {
-                        todayMenu = serverDishes;
-                        saveToday();
-                    }
+                    // 合并服务器数据：去重添加
+                    const existing = new Set(todayMenu);
+                    let changed = false;
+                    data.dishes.forEach(id => {
+                        if (!existing.has(id) && dishes.some(d => d.id === id)) {
+                            todayMenu.push(id);
+                            existing.add(id);
+                            changed = true;
+                        }
+                    });
+                    if (changed) saveToday();
                 } else if (data.date !== dateStr) {
                     // 新的一天，重置
                     todayMenu = [];
@@ -1327,7 +1332,7 @@
         }
 
         // ===== Today Menu: 红心加入/移除今日菜单 =====
-        function toggleToday(dishId) {
+        async function toggleToday(dishId) {
             const idx = todayMenu.indexOf(dishId);
             if (idx >= 0) {
                 todayMenu.splice(idx, 1);
@@ -1337,8 +1342,12 @@
             saveToday();
             renderList();
             renderTodayIfActive();
-            // 同步到 GitHub
-            syncTodayToGitHub();
+            // 先同步到 GitHub，再刷新确保一致
+            await syncTodayToGitHub();
+            // 同步后重新拉取确保与服务端一致
+            await loadSharedToday();
+            renderList();
+            renderTodayIfActive();
         }
 
         // ===== Page Switching =====

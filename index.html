@@ -837,7 +837,7 @@
         const TODAY_KEY = 'fm_today';
         const VERSION_KEY = 'fm_version';
         const GH_TOKEN_KEY = 'fm_gh_token';
-        const GH_REPO = 'j-kai-moji/menu';
+        const GH_REPO = 'J-Kai-moji/menu';
         let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
 
         // 版本检测：新版本自动清旧数据
@@ -1351,15 +1351,22 @@
         }
 
         // ===== Page Switching =====
+        let todayPollTimer = null;
         function switchPage(page) {
             currentPage = page;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
             document.querySelector('.fab').style.display = page === 'browse' ? 'flex' : 'none';
+            if (todayPollTimer) { clearInterval(todayPollTimer); todayPollTimer = null; }
             if (page === 'today') {
-                // 先从服务器拉取最新今日菜单
                 loadSharedToday().then(() => renderToday());
+                // 每 10 秒自动检查更新
+                todayPollTimer = setInterval(async () => {
+                    const before = todayMenu.join(',');
+                    await loadSharedToday();
+                    if (todayMenu.join(',') !== before) renderToday();
+                }, 10000);
             }
         }
 

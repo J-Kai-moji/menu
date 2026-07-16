@@ -1037,7 +1037,7 @@
                             emoji: sd.emoji || '', note: sd.note || '',
                             tags: sd.tags || [],
                             fromServer: true,
-                            createdAt: sd.createdAt || (new Date('2024-01-01').getTime() + parseInt(sd.id.replace('d','')) * 1000),
+                            createdAt: sd.createdAt || (new Date('2026-06-01').getTime() + parseInt(sd.id.replace('d','')) * 60000),
                         });
                         changed = true;
                         newCount++;

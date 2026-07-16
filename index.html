@@ -828,7 +828,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '63';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '64';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1008,7 +1008,6 @@
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
         async function syncFromServer(showMsg) {
             try {
-                // 优先从 raw.githubusercontent.com 拉取（即时更新），fallback 到 GitHub Pages
                 let res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json?t=' + Date.now(), { cache: 'no-cache' });
                 if (!res.ok) {
                     res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
@@ -1020,10 +1019,18 @@
                 let changed = false;
                 let newCount = 0;
 
-                // 确保所有服务器菜品都在本地，且信息是最新的
                 serverDishes.forEach(sd => {
-                    const existing = dishes.find(d => d.id === sd.id);
-                    if (existing) {
+                    let existing = dishes.find(d => d.id === sd.id);
+                    if (!existing) {
+                        // 检查是否有同名本地菜品（用户刚同步的），若有则合并而非重复
+                        existing = dishes.find(d => d.name === sd.name && d.fromServer === false && !d.id.startsWith('d'));
+                        if (existing) {
+                            existing.id = sd.id;
+                            existing.fromServer = true;
+                            changed = true;
+                        }
+                    }
+                    if (existing && existing.id === sd.id) {
                         if (sd.cat && existing.cat !== sd.cat) { existing.cat = sd.cat; changed = true; }
                         if (sd.name && existing.name !== sd.name) { existing.name = sd.name; changed = true; }
                         if (sd.emoji !== undefined && existing.emoji !== sd.emoji) { existing.emoji = sd.emoji; changed = true; }
@@ -1040,6 +1047,15 @@
                         changed = true;
                         newCount++;
                     }
+                });
+
+                // 去重：同名同ID只保留一份
+                const seen = new Set();
+                dishes = dishes.filter(d => {
+                    const key = d.id;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
                 });
 
                 if (changed) {

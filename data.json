@@ -814,41 +814,5 @@
     "tags": [
       "凉菜"
     ]
-  },
-  {
-    "id": "d100",
-    "name": "乾隆白菜",
-    "cat": "veggie",
-    "emoji": "🥬",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d101",
-    "name": "凉拌油麦菜",
-    "cat": "veggie",
-    "emoji": "🥬",
-    "note": "",
-    "tags": [
-      "凉菜"
-    ]
-  },
-  {
-    "id": "d102",
-    "name": "乾隆白菜",
-    "cat": "veggie",
-    "emoji": "🥬",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d103",
-    "name": "凉拌油麦菜",
-    "cat": "veggie",
-    "emoji": "🥬",
-    "note": "",
-    "tags": [
-      "凉菜"
-    ]
   }
 ]

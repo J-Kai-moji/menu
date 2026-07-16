@@ -28,7 +28,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
   // index.html and data.json: network-first (always get latest)
-  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/data.json' || url.pathname === '/today.json') {
+  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/data.json') {
     e.respondWith(
       fetch(e.request)
         .then(res => {

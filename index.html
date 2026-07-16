@@ -759,10 +759,7 @@
     <div id="page-today" class="page">
         <div class="header">
             <h1 id="todayTitle">📅 今日菜单</h1>
-            <div class="subtitle" id="todaySubtitle" style="display:flex;align-items:center;justify-content:center;gap:6px">
-                还没选菜呢
-                <button onclick="refreshToday()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:50px;padding:2px 10px;font-size:12px;cursor:pointer;flex-shrink:0">🔄 同步</button>
-            </div>
+            <div class="subtitle" id="todaySubtitle">还没选菜呢</div>
         </div>
 
         <div class="today-list" id="todayList"></div>
@@ -1092,120 +1089,12 @@
             dishes = deduped;
             saveStore();
             await syncFromServer();      // 拉取服务器新增菜品
-            await loadSharedToday();     // 拉取共享今日菜单
             renderAll();
             // 更新今日菜单徽标
             if (todayMenu.length > 0) {
                 const badge = document.getElementById('todayBadge');
                 badge.style.display = 'flex';
                 badge.textContent = todayMenu.length;
-            }
-        }
-
-        // ===== 共享今日菜单 =====
-        async function loadSharedToday() {
-            try {
-                let res;
-                if (ghToken) {
-                    // 有Token：用API直接读（无延迟，与写入一致）
-                    const apiHeaders = {
-                        Authorization: 'Bearer ' + ghToken,
-                        Accept: 'application/vnd.github+json',
-                        'X-GitHub-Api-Version': '2022-11-28'
-                    };
-                    res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/today.json?t=` + Date.now(), { headers: apiHeaders, cache: 'no-cache' });
-                    if (res.ok) {
-                        const file = await res.json();
-                        res = { ok: true, json: () => Promise.resolve(JSON.parse(base64Decode(file.content))) };
-                    }
-                }
-                if (!res || !res.ok) {
-                    // Fallback: raw CDN 或 GitHub Pages
-                    res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
-                    if (!res.ok) {
-                        res = await fetch('/today.json?t=' + Date.now(), { cache: 'no-cache' });
-                    }
-                }
-                if (!res.ok) { console.log('📡 today.json fetch 失败:', res.status); return; }
-                const data = await res.json();
-                const today = new Date();
-                const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-                console.log('📅 今日菜单服务器数据:', JSON.stringify(data), '本地date:', dateStr);
-
-                if (data.date === dateStr && Array.isArray(data.dishes)) {
-                    const serverList = data.dishes;
-                    const localList = todayMenu.join(',');
-                    const newList = serverList.join(',');
-                    if (localList !== newList) {
-                        if (ghToken) {
-                            // 有Token：以服务器为准替换
-                            todayMenu = serverList.slice();
-                        } else {
-                            // 无Token：合并服务器数据，保留本地未同步的
-                            const set = new Set(todayMenu);
-                            serverList.forEach(id => { if (!set.has(id)) { todayMenu.push(id); set.add(id); } });
-                            // 同时删除服务器已移除的
-                            const serverSet = new Set(serverList);
-                            todayMenu = todayMenu.filter(id => serverSet.has(id));
-                        }
-                        saveToday();
-                        showToast('📥 已同步（共' + todayMenu.length + '道）');
-                    }
-                } else if (data.date !== dateStr) {
-                    // 新的一天，重置
-                    todayMenu = [];
-                    saveToday();
-                    if (ghToken) syncTodayToGitHub();
-                }
-            } catch (e) {
-                console.log('📡 今日菜单离线模式:', e.message || e);
-            }
-        }
-
-        async function syncTodayToGitHub() {
-            if (!ghToken) { showToast('⚠️ 请先设置Token'); return; }
-            try {
-                const apiHeaders = {
-                    Authorization: 'Bearer ' + ghToken,
-                    Accept: 'application/vnd.github+json',
-                    'X-GitHub-Api-Version': '2022-11-28'
-                };
-                const url = `https://api.github.com/repos/${GH_REPO}/contents/today.json`;
-
-                // 获取当前 SHA（重试最多3次应对并发冲突）
-                let sha = null, lastErr = null;
-                for (let attempt = 0; attempt < 3; attempt++) {
-                    if (attempt > 0) await new Promise(r => setTimeout(r, 500));
-                    const res = await fetch(url, { headers: apiHeaders });
-                    if (res.ok) {
-                        const file = await res.json();
-                        sha = file.sha;
-                    }
-
-                    const today = new Date();
-                    const dateStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-                    const newContent = JSON.stringify({ date: dateStr, dishes: todayMenu }) + '\n';
-
-                    const putRes = await fetch(url, {
-                        method: 'PUT',
-                        headers: { ...apiHeaders, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `更新今日菜单（${todayMenu.length}道菜）`,
-                            content: base64Encode(newContent),
-                            ...(sha ? { sha } : {})
-                        })
-                    });
-                    if (putRes.ok) return true; // 成功！
-                    lastErr = await putRes.json().catch(() => ({}));
-                    if (putRes.status !== 409) break; // 非冲突错误，不重试
-                }
-                console.error('今日菜单同步失败:', lastErr);
-                showToast('⚠️ 今日菜单同步失败: ' + ((lastErr && lastErr.message) || '未知错误'));
-                return false;
-            } catch (e) {
-                console.error('今日菜单同步失败:', e);
-                showToast('⚠️ 今日菜单同步失败');
-                return false;
             }
         }
 
@@ -1350,73 +1239,37 @@
                 saveToday();
                 renderList();
                 renderTodayIfActive();
-                syncTodayToGitHub();
             }
             const overlay = document.getElementById('pickOverlay');
             if (overlay) overlay.remove();
             showToast('已加入今日菜单 ✅');
         }
 
-        let lastLocalChange = 0; // 防止轮询覆盖本地刚做的修改
-
         // ===== Today Menu: 红心加入/移除今日菜单 =====
-        async function toggleToday(dishId) {
+        function toggleToday(dishId) {
             const idx = todayMenu.indexOf(dishId);
-            const added = idx < 0;
-            if (added) {
-                todayMenu.push(dishId);
-            } else {
+            if (idx >= 0) {
                 todayMenu.splice(idx, 1);
+            } else {
+                todayMenu.push(dishId);
             }
-            lastLocalChange = Date.now();
             saveToday();
             renderList();
             renderTodayIfActive();
-            // 同步到 GitHub
-            if (ghToken) {
-                const ok = await syncTodayToGitHub();
-                showToast(ok ? (added ? '✅ 已添加并同步' : '✅ 已移除并同步') : '⚠️ 同步失败');
-            } else {
-                showToast(added ? '📱 已添加（仅本机，请设置Token）' : '📱 已移除（仅本机）');
-            }
         }
 
         // ===== Page Switching =====
-        let todayPollTimer = null;
         function switchPage(page) {
             currentPage = page;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
             document.querySelector('.fab').style.display = page === 'browse' ? 'flex' : 'none';
-            if (todayPollTimer) { clearInterval(todayPollTimer); todayPollTimer = null; }
-            if (page === 'today') {
-                loadSharedToday().then(() => renderToday());
-                // 每 10 秒自动检查更新
-                todayPollTimer = setInterval(async () => {
-                    // 本地刚修改过，30秒内不覆盖（等服务器同步完成）
-                    if (Date.now() - lastLocalChange < 5000) return;
-                    const before = todayMenu.join(',');
-                    await loadSharedToday();
-                    if (todayMenu.join(',') !== before) renderToday();
-                }, 10000);
-            }
+            if (page === 'today') renderToday();
         }
 
         function renderTodayIfActive() {
             if (currentPage === 'today') renderToday();
-        }
-
-        async function refreshToday() {
-            const before = todayMenu.join(',');
-            showToast('🔄 同步中...');
-            await loadSharedToday();
-            renderToday();
-            if (todayMenu.join(',') !== before) {
-                showToast('✅ 今日菜单已更新');
-            } else {
-                showToast('✅ 已是最新');
-            }
         }
 
         function renderToday() {
@@ -1441,11 +1294,11 @@
             if (todayMenu.length === 0) {
                 list.innerHTML = '';
                 empty.style.display = 'block';
-                subtitle.innerHTML = '还没选菜呢<button onclick="refreshToday()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:50px;padding:2px 10px;font-size:12px;cursor:pointer;flex-shrink:0;margin-left:6px">🔄 同步</button>';
+                subtitle.textContent = '还没选菜呢';
                 return;
             }
             empty.style.display = 'none';
-            subtitle.innerHTML = '共 ' + todayMenu.length + ' 道菜<button onclick="refreshToday()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:50px;padding:2px 10px;font-size:12px;cursor:pointer;flex-shrink:0;margin-left:6px">🔄 同步</button>';
+            subtitle.textContent = '共 ' + todayMenu.length + ' 道菜';
 
             // 分组
             const groups = { meat: [], veggie: [], soup: [], staple: [] };
@@ -1480,7 +1333,6 @@
             saveToday();
             renderList();
             renderToday();
-            syncTodayToGitHub();
         }
 
         // ===== Delete =====
@@ -1849,13 +1701,6 @@
                 navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION).catch(() => {});
             });
         }
-
-        // ===== 从后台切回时自动刷新今日菜单 =====
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && currentPage === 'today') {
-                loadSharedToday().then(() => renderToday());
-            }
-        });
 
         // ===== Init =====
         initData().then(() => {

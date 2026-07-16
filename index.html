@@ -831,7 +831,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '67';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '68';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1176,15 +1176,17 @@
                             ...(sha ? { sha } : {})
                         })
                     });
-                    if (putRes.ok) return; // 成功！
+                    if (putRes.ok) return true; // 成功！
                     lastErr = await putRes.json().catch(() => ({}));
                     if (putRes.status !== 409) break; // 非冲突错误，不重试
                 }
                 console.error('今日菜单同步失败:', lastErr);
                 showToast('⚠️ 今日菜单同步失败: ' + ((lastErr && lastErr.message) || '未知错误'));
+                return false;
             } catch (e) {
                 console.error('今日菜单同步失败:', e);
                 showToast('⚠️ 今日菜单同步失败');
+                return false;
             }
         }
 
@@ -1339,20 +1341,26 @@
         // ===== Today Menu: 红心加入/移除今日菜单 =====
         async function toggleToday(dishId) {
             const idx = todayMenu.indexOf(dishId);
-            if (idx >= 0) {
-                todayMenu.splice(idx, 1);
-            } else {
+            const added = idx < 0;
+            if (added) {
                 todayMenu.push(dishId);
+            } else {
+                todayMenu.splice(idx, 1);
             }
             saveToday();
             renderList();
             renderTodayIfActive();
-            // 先同步到 GitHub，再刷新确保一致
-            await syncTodayToGitHub();
-            // 同步后重新拉取确保与服务端一致
-            await loadSharedToday();
-            renderList();
-            renderTodayIfActive();
+            // 同步到 GitHub
+            if (ghToken) {
+                const ok = await syncTodayToGitHub();
+                if (ok) {
+                    await loadSharedToday();
+                    renderList();
+                    renderTodayIfActive();
+                }
+            } else {
+                showToast(added ? '已加入今日菜单（仅本机）' : '已移除（仅本机）');
+            }
         }
 
         // ===== Page Switching =====

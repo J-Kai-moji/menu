@@ -827,7 +827,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '58';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '59';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1577,41 +1577,52 @@
         }
 
         // ===== 管理员设置 Token（长按标题 3 秒） =====
-        let headerTapTimer = null;
-        document.querySelector('.header').addEventListener('mousedown', () => {
-            headerTapTimer = setTimeout(() => {
-                const token = prompt('🔑 输入 GitHub Personal Access Token\n（用于自动同步菜品到服务器）：\n\n获取方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）\n\n留空则关闭自动同步', ghToken);
-                if (token !== null) {
-                    ghToken = token.trim();
-                    if (ghToken) {
-                        localStorage.setItem(GH_TOKEN_KEY, ghToken);
-                        showToast('✅ Token 已保存，自动同步已开启');
-                    } else {
-                        localStorage.removeItem(GH_TOKEN_KEY);
-                        ghToken = '';
-                        showToast('🔒 自动同步已关闭');
+        async function setToken(token) {
+            if (!token) {
+                localStorage.removeItem(GH_TOKEN_KEY);
+                ghToken = '';
+                showToast('🔒 自动同步已关闭');
+                return;
+            }
+            // 验证 Token 是否有效
+            showToast('🔍 正在验证 Token...');
+            try {
+                const testRes = await fetch(`https://api.github.com/repos/${GH_REPO}`, {
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        Accept: 'application/vnd.github+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
                     }
+                });
+                if (!testRes.ok) {
+                    const msg = testRes.status === 401 ? 'Token 无效或已过期' :
+                                testRes.status === 403 ? 'Token 没有访问此仓库的权限' :
+                                testRes.status === 404 ? '仓库不存在或 Token 未授权此仓库' :
+                                '验证失败 HTTP ' + testRes.status;
+                    showToast('❌ ' + msg);
+                    return;
                 }
-            }, 3000);
+                localStorage.setItem(GH_TOKEN_KEY, token);
+                ghToken = token;
+                showToast('✅ Token 有效，自动同步已开启');
+                updateSyncStatus();
+            } catch (e) {
+                showToast('❌ 网络错误，请稍后重试');
+            }
+        }
+
+        let headerTapTimer = null;
+        function promptToken() {
+            const token = prompt('🔑 输入 GitHub Personal Access Token\n（Fine-grained token → 选 j-kai-moji/menu → Contents 读写权限）\n\n留空则关闭自动同步', ghToken);
+            if (token !== null) setToken(token.trim());
+        }
+        document.querySelector('.header').addEventListener('mousedown', () => {
+            headerTapTimer = setTimeout(promptToken, 3000);
         });
         document.querySelector('.header').addEventListener('mouseup', () => clearTimeout(headerTapTimer));
         document.querySelector('.header').addEventListener('mouseleave', () => clearTimeout(headerTapTimer));
-        // 移动端 touch 事件
-        document.querySelector('.header').addEventListener('touchstart', (e) => {
-            headerTapTimer = setTimeout(() => {
-                const token = prompt('🔑 输入 GitHub Personal Access Token\n\n获取方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）\n\n留空则关闭自动同步', ghToken);
-                if (token !== null) {
-                    ghToken = token.trim();
-                    if (ghToken) {
-                        localStorage.setItem(GH_TOKEN_KEY, ghToken);
-                        showToast('✅ Token 已保存，自动同步已开启');
-                    } else {
-                        localStorage.removeItem(GH_TOKEN_KEY);
-                        ghToken = '';
-                        showToast('🔒 自动同步已关闭');
-                    }
-                }
-            }, 3000);
+        document.querySelector('.header').addEventListener('touchstart', () => {
+            headerTapTimer = setTimeout(promptToken, 3000);
         }, { passive: true });
         document.querySelector('.header').addEventListener('touchend', () => clearTimeout(headerTapTimer));
         document.querySelector('.header').addEventListener('touchcancel', () => clearTimeout(headerTapTimer));

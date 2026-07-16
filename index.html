@@ -1105,11 +1105,14 @@
                 const q = searchQuery.toLowerCase();
                 result = result.filter(d => d.name.toLowerCase().includes(q));
             }
-            // 排序规则：用户自增(u开头) > 服务器菜品(d开头，数字越大越靠前)
+            // 排序规则：按ID降序。d开头取数字，u开头取时间戳
             result.sort((a, b) => {
-                const aNum = a.id.startsWith('d') ? parseInt(a.id.slice(1)) : 9999;
-                const bNum = b.id.startsWith('d') ? parseInt(b.id.slice(1)) : 9999;
-                return bNum - aNum;
+                const getVal = (id) => {
+                    if (id.startsWith('d')) return parseInt(id.slice(1));
+                    if (id.startsWith('u')) return parseInt(id.slice(1).split('_')[0]) / 1000;
+                    return 0;
+                };
+                return getVal(b.id) - getVal(a.id);
             });
             return result;
         }

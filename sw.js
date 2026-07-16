@@ -1,12 +1,11 @@
-const CACHE = 'family-menu-v2';
+const CACHE = 'family-menu-v4';
 const ASSETS = [
   '/',
-  '/index.html',
   '/manifest.json',
   '/icon.svg',
 ];
 
-// Install: cache core assets (NOT data.json - it needs to stay fresh)
+// Install: pre-cache static shells (NOT index.html or data.json — those stay fresh)
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll(ASSETS))
@@ -24,12 +23,12 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Fetch: network-first for data, cache-first for static
+// Fetch: network-first for HTML & data, cache-first for static
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // data.json: network-first (always get latest dishes)
-  if (url.pathname === '/data.json') {
+  // index.html and data.json: network-first (always get latest)
+  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/data.json') {
     e.respondWith(
       fetch(e.request)
         .then(res => {

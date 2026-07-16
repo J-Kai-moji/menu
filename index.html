@@ -1145,7 +1145,7 @@
                 const tooltip = inToday ? '已加入今日菜单，点击取消' : '点击加入今日菜单';
                 const localBadge = d.fromServer ? '' : '<span class="tag" style="background:#fef3c7;color:#b45309;margin-left:2px">📱本机</span>';
                 return `
-                <div class="dish-card ${d.cat}" onclick="openModal('${d.id}')" title="点击编辑">
+                <div class="dish-card ${d.cat}" data-id="${d.id}" onclick="openModal('${d.id}')" title="点击编辑 | 长按删除">
                     <div class="dish-emoji">${d.emoji || defaultEmojiForCat(d.cat)}</div>
                     <div class="dish-info">
                         <div class="dish-name">
@@ -1701,6 +1701,34 @@
                 navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION).catch(() => {});
             });
         }
+
+        // ===== 长按删除菜品 =====
+        (function initLongPress() {
+            const list = document.getElementById('dishList');
+            let timer = null, targetCard = null;
+            list.addEventListener('touchstart', (e) => {
+                targetCard = e.target.closest('.dish-card');
+                if (!targetCard) return;
+                timer = setTimeout(() => {
+                    const id = targetCard.dataset.id;
+                    if (id) deleteDish(id);
+                    timer = null;
+                }, 800);
+            }, { passive: true });
+            list.addEventListener('touchend', () => { clearTimeout(timer); });
+            list.addEventListener('touchmove', () => { clearTimeout(timer); });
+            list.addEventListener('mousedown', (e) => {
+                targetCard = e.target.closest('.dish-card');
+                if (!targetCard) return;
+                timer = setTimeout(() => {
+                    const id = targetCard.dataset.id;
+                    if (id) deleteDish(id);
+                    timer = null;
+                }, 800);
+            });
+            list.addEventListener('mouseup', () => { clearTimeout(timer); });
+            list.addEventListener('mouseleave', () => { clearTimeout(timer); });
+        })();
 
         // ===== Init =====
         initData().then(() => {

@@ -883,6 +883,112 @@
             localStorage.setItem(TODAY_KEY, JSON.stringify(todayMenu));
         }
 
+        // ===== 今日菜单云端同步（仓库 today.json，全设备共享）=====
+        // 任何设备加菜/删菜 → 推送操作到 today.json；其他设备轮询拉取最新内容
+        let todayEtag = '';       // 轮询用 ETag（304 不计入 API 限流）
+        let todayPushCount = 0;   // 进行中的推送数（推送期间暂停应用远端数据，防止本地修改被回滚）
+
+        function todayDateStr() {
+            const n = new Date();
+            return n.getFullYear() + '-' + (n.getMonth() + 1) + '-' + n.getDate();
+        }
+
+        function todayApiHeaders() {
+            return {
+                Authorization: 'Bearer ' + ghToken,
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            };
+        }
+
+        // 拉取远端今日菜单；返回 null 表示无变化或失败。日期不是今天则视为空
+        async function fetchTodayRemote() {
+            const today = todayDateStr();
+            try {
+                if (ghToken) {
+                    const headers = todayApiHeaders();
+                    if (todayEtag) headers['If-None-Match'] = todayEtag;
+                    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/today.json`, { headers });
+                    if (res.status === 304) return null;
+                    if (!res.ok) return null;
+                    const etag = res.headers.get('ETag');
+                    if (etag) todayEtag = etag;
+                    const file = await res.json();
+                    const data = JSON.parse(base64Decode(file.content));
+                    return { dishes: data.date === today ? (data.dishes || []) : [] };
+                }
+                // 无 Token：走 raw（CDN 有缓存，延迟几分钟，尽力而为）
+                const res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
+                if (!res.ok) return null;
+                const data = await res.json();
+                return { dishes: data.date === today ? (data.dishes || []) : [] };
+            } catch { return null; }
+        }
+
+        // 应用远端数据到本地（推送进行中跳过，避免覆盖刚做的修改）
+        function applyTodayRemote(remote, silent) {
+            if (!remote || todayPushCount > 0) return;
+            if (JSON.stringify(remote.dishes) === JSON.stringify(todayMenu)) return;
+            todayMenu = remote.dishes;
+            saveToday();
+            renderList();
+            renderTodayIfActive();
+            if (!silent) showToast('🔄 今日菜单已同步更新');
+        }
+
+        // 推送一个操作到云端：add / remove / clear。冲突(409)时基于最新服务端状态重放操作，最多3次
+        async function pushTodayOp(op) {
+            if (!ghToken) return;
+            todayPushCount++;
+            try {
+                const url = `https://api.github.com/repos/${GH_REPO}/contents/today.json`;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    const res = await fetch(url, { headers: todayApiHeaders() });
+                    if (!res.ok) return;
+                    const file = await res.json();
+                    const data = JSON.parse(base64Decode(file.content));
+                    let list = data.date === todayDateStr() ? (data.dishes || []) : [];
+                    if (op.type === 'add') {
+                        if (!list.includes(op.id)) list.push(op.id);
+                    } else if (op.type === 'remove') {
+                        list = list.filter(id => id !== op.id);
+                    } else if (op.type === 'clear') {
+                        list = [];
+                    }
+                    const newContent = JSON.stringify({ date: todayDateStr(), dishes: list }) + '\n';
+                    const putRes = await fetch(url, {
+                        method: 'PUT',
+                        headers: { ...todayApiHeaders(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: '今日菜单：' + (op.type === 'add' ? '加菜' : op.type === 'remove' ? '删菜' : '清空'),
+                            content: base64Encode(newContent),
+                            sha: file.sha
+                        })
+                    });
+                    if (putRes.ok) {
+                        todayEtag = ''; // 内容已变，强制下次轮询拉全量
+                        return;
+                    }
+                    if (putRes.status !== 409) return; // 非冲突错误不重试
+                }
+            } catch { /* 静默，下次操作或轮询会再同步 */ }
+            finally { todayPushCount--; }
+        }
+
+        // 轮询：有 Token 10 秒一次（ETag 304 不计限流），无 Token 30 秒走 raw
+        let todayPollTimer = null;
+        function startTodayPolling() {
+            if (todayPollTimer) clearInterval(todayPollTimer);
+            todayPollTimer = setInterval(async () => {
+                if (document.hidden) return;
+                applyTodayRemote(await fetchTodayRemote());
+            }, ghToken ? 10000 : 30000);
+        }
+        // 切回前台立即拉一次
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden) applyTodayRemote(await fetchTodayRemote());
+        });
+
         // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
         const SEED_DISHES = [
           {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":"","tags":[]},
@@ -1089,6 +1195,8 @@
             dishes = deduped;
             saveStore();
             await syncFromServer();      // 拉取服务器新增菜品
+            applyTodayRemote(await fetchTodayRemote(), true);  // 拉取云端今日菜单（静默）
+            startTodayPolling();         // 开启今日菜单轮询
             renderAll();
             // 更新今日菜单徽标
             if (todayMenu.length > 0) {
@@ -1243,6 +1351,7 @@
         function pickAddToToday(dishId) {
             if (!todayMenu.includes(dishId)) {
                 todayMenu.push(dishId);
+                pushTodayOp({ type: 'add', id: dishId });
                 saveToday();
                 renderList();
                 renderTodayIfActive();
@@ -1257,8 +1366,10 @@
             const idx = todayMenu.indexOf(dishId);
             if (idx >= 0) {
                 todayMenu.splice(idx, 1);
+                pushTodayOp({ type: 'remove', id: dishId });
             } else {
                 todayMenu.push(dishId);
+                pushTodayOp({ type: 'add', id: dishId });
             }
             saveToday();
             renderList();
@@ -1337,6 +1448,7 @@
         function clearToday() {
             if (!confirm('确定清空今日菜单？')) return;
             todayMenu = [];
+            pushTodayOp({ type: 'clear' });
             saveToday();
             renderList();
             renderToday();
@@ -1351,6 +1463,7 @@
             // 本地删除
             dishes = dishes.filter(d => d.id !== id);
             delete wants[id];
+            if (todayMenu.includes(id)) pushTodayOp({ type: 'remove', id });
             todayMenu = todayMenu.filter(tid => tid !== id);
             saveStore();
             saveToday();
@@ -1666,6 +1779,7 @@
                 localStorage.removeItem(GH_TOKEN_KEY);
                 ghToken = '';
                 showToast('🔒 自动同步已关闭');
+                startTodayPolling();  // 降级为 30 秒慢轮询
                 return;
             }
             // 验证 Token 是否有效
@@ -1690,6 +1804,8 @@
                 ghToken = token;
                 showToast('✅ Token 有效，自动同步已开启');
                 updateSyncStatus();
+                applyTodayRemote(await fetchTodayRemote(), true);  // 立即拉一次今日菜单
+                startTodayPolling();  // 切换为 10 秒快轮询
             } catch (e) {
                 showToast('❌ 网络错误，请稍后重试');
             }

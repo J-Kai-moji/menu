@@ -1494,5 +1494,157 @@
     "emoji": "🥣",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d188",
+    "name": "哈拉巴蘸蒜酱",
+    "cat": "meat",
+    "emoji": "🐷",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d189",
+    "name": "葱油鱼片",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d190",
+    "name": "豆花牛柳",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d191",
+    "name": "辣椒炒肉",
+    "cat": "meat",
+    "emoji": "🌶️",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d192",
+    "name": "蒜蓉海鲜",
+    "cat": "meat",
+    "emoji": "🦐",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d193",
+    "name": "洋葱炒牛肉",
+    "cat": "meat",
+    "emoji": "🧅",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d194",
+    "name": "果汁排骨",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d195",
+    "name": "小炒黄牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d196",
+    "name": "酸辣土豆丝",
+    "cat": "veggie",
+    "emoji": "🥔",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d197",
+    "name": "上汤菠菜苗",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d198",
+    "name": "豆干炒韭菜",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d199",
+    "name": "炒合菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d200",
+    "name": "醋烹豆芽",
+    "cat": "veggie",
+    "emoji": "🌱",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d201",
+    "name": "凉拌海带丝",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d202",
+    "name": "鸡汤豆腐串",
+    "cat": "veggie",
+    "emoji": "🍢",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d203",
+    "name": "酸辣汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d204",
+    "name": "鲫鱼汤",
+    "cat": "soup",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d205",
+    "name": "番茄菌菇汤",
+    "cat": "soup",
+    "emoji": "🍅",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d206",
+    "name": "羊肚菌鸡蛋炖肉汁",
+    "cat": "soup",
+    "emoji": "🍄",
+    "note": "",
+    "tags": []
   }
 ]

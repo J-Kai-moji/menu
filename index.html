@@ -828,10 +828,11 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '77';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '78';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
+        const TODAY_DATE_KEY = 'fm_today_date';
         const VERSION_KEY = 'fm_version';
         const GH_TOKEN_KEY = 'fm_gh_token';
         const GH_REPO = 'J-Kai-moji/menu';
@@ -871,6 +872,8 @@
                 dishes = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
                 wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
                 todayMenu = JSON.parse(localStorage.getItem(TODAY_KEY)) || [];
+                // 新的一天，本地今日菜单自动重置
+                if (localStorage.getItem(TODAY_DATE_KEY) !== todayDateStr()) todayMenu = [];
             } catch { dishes = []; wants = {}; todayMenu = []; }
         }
 
@@ -881,12 +884,21 @@
 
         function saveToday() {
             localStorage.setItem(TODAY_KEY, JSON.stringify(todayMenu));
+            localStorage.setItem(TODAY_DATE_KEY, todayDateStr());
         }
 
         // ===== 今日菜单云端同步（仓库 today.json，全设备共享）=====
         // 任何设备加菜/删菜 → 推送操作到 today.json；其他设备轮询拉取最新内容
         let todayEtag = '';       // 轮询用 ETag（304 不计入 API 限流）
         let todayPushCount = 0;   // 进行中的推送数（推送期间暂停应用远端数据，防止本地修改被回滚）
+        let todaySetTried = false; // 云端过期时已尝试过一次自动建立今日菜单
+        let noTokenHinted = false; // 未配置Token提示只弹一次
+
+        function hintNoTokenOnce() {
+            if (noTokenHinted) return;
+            noTokenHinted = true;
+            showToast('📵 未配置同步Token，今日菜单仅本机可见');
+        }
 
         function todayDateStr() {
             const n = new Date();
@@ -915,19 +927,28 @@
                     if (etag) todayEtag = etag;
                     const file = await res.json();
                     const data = JSON.parse(base64Decode(file.content));
-                    return { dishes: data.date === today ? (data.dishes || []) : [] };
+                    return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
                 }
                 // 无 Token：走 raw（CDN 有缓存，延迟几分钟，尽力而为）
                 const res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
                 if (!res.ok) return null;
                 const data = await res.json();
-                return { dishes: data.date === today ? (data.dishes || []) : [] };
+                return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
             } catch { return null; }
         }
 
         // 应用远端数据到本地（推送进行中跳过，避免覆盖刚做的修改）
         function applyTodayRemote(remote, silent) {
             if (!remote || todayPushCount > 0) return;
+            if (remote.stale) {
+                // 云端还是旧日期：绝不用它清空本地；本地有今天新选的菜且有Token → 上传建立今日菜单
+                if (todayMenu.length > 0 && ghToken && !todaySetTried) {
+                    todaySetTried = true;
+                    pushTodayOp({ type: 'set' });
+                }
+                return;
+            }
+            todaySetTried = false; // 云端已是今日数据，重置标记（供第二天再次自动建立）
             if (JSON.stringify(remote.dishes) === JSON.stringify(todayMenu)) return;
             todayMenu = remote.dishes;
             saveToday();
@@ -936,19 +957,27 @@
             if (!silent) showToast('🔄 今日菜单已同步更新');
         }
 
-        // 推送一个操作到云端：add / remove / clear。冲突(409)时基于最新服务端状态重放操作，最多3次
+        // 推送一个操作到云端：add / remove / clear / set。冲突(409)时基于最新服务端状态重放操作，最多3次
         async function pushTodayOp(op) {
-            if (!ghToken) return;
+            if (!ghToken) { hintNoTokenOnce(); return; }
             todayPushCount++;
+            let failMsg = '';
             try {
                 const url = `https://api.github.com/repos/${GH_REPO}/contents/today.json`;
                 for (let attempt = 0; attempt < 3; attempt++) {
                     const res = await fetch(url, { headers: todayApiHeaders() });
-                    if (!res.ok) return;
+                    if (!res.ok) {
+                        failMsg = res.status === 401 ? 'Token无效或已过期' :
+                                  res.status === 403 ? 'Token权限不足' : 'HTTP ' + res.status;
+                        break;
+                    }
                     const file = await res.json();
                     const data = JSON.parse(base64Decode(file.content));
                     let list = data.date === todayDateStr() ? (data.dishes || []) : [];
-                    if (op.type === 'add') {
+                    if (op.type === 'set') {
+                        // 建立今日菜单：云端已是今日则取并集，避免覆盖别人刚加的
+                        list = data.date === todayDateStr() ? [...new Set([...list, ...todayMenu])] : [...todayMenu];
+                    } else if (op.type === 'add') {
                         if (!list.includes(op.id)) list.push(op.id);
                     } else if (op.type === 'remove') {
                         list = list.filter(id => id !== op.id);
@@ -960,7 +989,7 @@
                         method: 'PUT',
                         headers: { ...todayApiHeaders(), 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            message: '今日菜单：' + (op.type === 'add' ? '加菜' : op.type === 'remove' ? '删菜' : '清空'),
+                            message: '今日菜单：' + (op.type === 'add' ? '加菜' : op.type === 'remove' ? '删菜' : op.type === 'clear' ? '清空' : '同步'),
                             content: base64Encode(newContent),
                             sha: file.sha
                         })
@@ -969,9 +998,16 @@
                         todayEtag = ''; // 内容已变，强制下次轮询拉全量
                         return;
                     }
-                    if (putRes.status !== 409) return; // 非冲突错误不重试
+                    if (putRes.status !== 409) {
+                        failMsg = putRes.status === 403 ? 'Token权限不足（需Contents读写权限）' :
+                                  putRes.status === 404 ? '仓库不可访问，请检查Token授权' : 'HTTP ' + putRes.status;
+                        break;
+                    }
                 }
-            } catch { /* 静默，下次操作或轮询会再同步 */ }
+                showToast('⚠️ 今日菜单同步失败：' + (failMsg || '多人同时操作冲突，请重试'));
+            } catch {
+                showToast('⚠️ 今日菜单同步失败：网络错误');
+            }
             finally { todayPushCount--; }
         }
 

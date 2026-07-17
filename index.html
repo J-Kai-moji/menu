@@ -828,7 +828,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '76';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '77';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1897,11 +1897,12 @@
         function updateSyncStatus() {
             const sub = document.getElementById('headerSubtitle');
             const localCount = dishes.filter(d => !d.fromServer).length;
+            const ver = ' · v' + APP_VERSION;
             if (!ghToken) {
-                sub.textContent = localCount > 0 ? `今天想吃什么？（${localCount}道本地菜未同步）` : '今天想吃什么？';
+                sub.textContent = localCount > 0 ? `今天想吃什么？（${localCount}道本地菜未同步）${ver}` : '今天想吃什么？' + ver;
                 sub.style.color = localCount > 0 ? '#ffe0a0' : '';
             } else {
-                sub.textContent = localCount > 0 ? `☁️ ${localCount}道待同步，编辑后自动推送` : '☁️ 自动同步已开启';
+                sub.textContent = localCount > 0 ? `☁️ ${localCount}道待同步，编辑后自动推送${ver}` : '☁️ 自动同步已开启' + ver;
                 sub.style.color = '';
             }
         }

@@ -714,14 +714,6 @@
     ]
   },
   {
-    "id": "d089",
-    "name": "排骨炖土豆",
-    "cat": "meat",
-    "emoji": "🥩",
-    "note": "",
-    "tags": []
-  },
-  {
     "id": "d090",
     "name": "香菜拌牛肉",
     "cat": "meat",
@@ -884,14 +876,6 @@
     "name": "白菜猪肉炖粉条",
     "cat": "meat",
     "emoji": "🥬",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d110",
-    "name": "排骨炖豆角",
-    "cat": "meat",
-    "emoji": "🥩",
     "note": "",
     "tags": []
   },

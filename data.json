@@ -1646,5 +1646,149 @@
     "emoji": "🍄",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d207",
+    "name": "糖醋土豆鸡蛋",
+    "cat": "veggie",
+    "emoji": "🥔",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d208",
+    "name": "韩式拌花菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d209",
+    "name": "雪里蕻炖豆腐",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d210",
+    "name": "干烧豆角",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d211",
+    "name": "白菜拌粉丝",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d212",
+    "name": "东北凉菜",
+    "cat": "veggie",
+    "emoji": "🥗",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d213",
+    "name": "照烧梅花肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d214",
+    "name": "溜肥肠",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d215",
+    "name": "酱炖排骨",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d216",
+    "name": "咖喱蟹",
+    "cat": "meat",
+    "emoji": "🦀",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d217",
+    "name": "生焗花螺鸡",
+    "cat": "meat",
+    "emoji": "🐔",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d218",
+    "name": "蒜苗炒腊肉",
+    "cat": "meat",
+    "emoji": "🥓",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d219",
+    "name": "扇贝肉汆蛋",
+    "cat": "meat",
+    "emoji": "🥚",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d220",
+    "name": "芹菜炝猪耳",
+    "cat": "meat",
+    "emoji": "🐷",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d221",
+    "name": "白灼虾",
+    "cat": "meat",
+    "emoji": "🦐",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d222",
+    "name": "大蒜烧鸡腿",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d223",
+    "name": "萝卜炖棒骨",
+    "cat": "soup",
+    "emoji": "🍖",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d224",
+    "name": "饭包",
+    "cat": "staple",
+    "emoji": "🍙",
+    "note": "",
+    "tags": []
   }
 ]

@@ -1592,14 +1592,6 @@
     "tags": []
   },
   {
-    "id": "d200",
-    "name": "醋烹豆芽",
-    "cat": "veggie",
-    "emoji": "🌱",
-    "note": "",
-    "tags": []
-  },
-  {
     "id": "d201",
     "name": "凉拌海带丝",
     "cat": "veggie",
@@ -1666,14 +1658,6 @@
   {
     "id": "d209",
     "name": "雪里蕻炖豆腐",
-    "cat": "veggie",
-    "emoji": "🫘",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d210",
-    "name": "干烧豆角",
     "cat": "veggie",
     "emoji": "🫘",
     "note": "",
@@ -2022,14 +2006,6 @@
     "emoji": "🥒",
     "note": "",
     "tags": ["凉菜"]
-  },
-  {
-    "id": "d254",
-    "name": "豆豉鲮鱼油麦菜",
-    "cat": "veggie",
-    "emoji": "🐟",
-    "note": "",
-    "tags": []
   },
   {
     "id": "d255",

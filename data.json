@@ -2286,5 +2286,125 @@
     "emoji": "🍮",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d290",
+    "name": "黄皮鸭",
+    "cat": "meat",
+    "emoji": "🦆",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d291",
+    "name": "姜爆里脊丝",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d292",
+    "name": "鸡蛋火腿炒包菜",
+    "cat": "meat",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d293",
+    "name": "黄鱼烧豆腐",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d294",
+    "name": "钵钵鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d295",
+    "name": "肉皮冻",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d296",
+    "name": "仔姜焖鸭",
+    "cat": "meat",
+    "emoji": "🦆",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d297",
+    "name": "西红柿鸡蛋打卤面",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d298",
+    "name": "猪肉汤饭",
+    "cat": "staple",
+    "emoji": "🍚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d299",
+    "name": "小白菜酱汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d300",
+    "name": "花甲丝瓜煲",
+    "cat": "soup",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d301",
+    "name": "口蘑玉米浓汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d302",
+    "name": "凉拌贡菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d303",
+    "name": "蒜蓉西兰花",
+    "cat": "veggie",
+    "emoji": "🥦",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d304",
+    "name": "陈醋萝卜",
+    "cat": "veggie",
+    "emoji": "🥕",
+    "note": "",
+    "tags": ["凉菜"]
   }
 ]

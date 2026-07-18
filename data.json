@@ -1790,5 +1790,317 @@
     "emoji": "🍙",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d225",
+    "name": "孜然烤羊排",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d226",
+    "name": "汆锅底",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d227",
+    "name": "红烧猪蹄",
+    "cat": "meat",
+    "emoji": "🐷",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d228",
+    "name": "宫保鸡丁",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d229",
+    "name": "羊肉汆丸子",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d230",
+    "name": "葱焖牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d231",
+    "name": "豆瓣牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d232",
+    "name": "大虾烩白菜",
+    "cat": "meat",
+    "emoji": "🦐",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d233",
+    "name": "水煮牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d234",
+    "name": "黄油焗花螺",
+    "cat": "meat",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d235",
+    "name": "醋香焖鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d236",
+    "name": "葱爆扇贝",
+    "cat": "meat",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d237",
+    "name": "辣白菜炖大棒骨",
+    "cat": "meat",
+    "emoji": "🍖",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d238",
+    "name": "梅干菜烧牛腩",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d239",
+    "name": "红焖羊肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d240",
+    "name": "羊杂汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d241",
+    "name": "酸菜猪脚烫生蚝",
+    "cat": "soup",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d242",
+    "name": "山药鸡汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d243",
+    "name": "西红柿鸡蛋汤",
+    "cat": "soup",
+    "emoji": "🍅",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d244",
+    "name": "胡椒筒骨煲",
+    "cat": "soup",
+    "emoji": "🍖",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d245",
+    "name": "萝卜三鲜汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d246",
+    "name": "黄鱼滑汤",
+    "cat": "soup",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d247",
+    "name": "肉末嫩豆腐汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d248",
+    "name": "黄花鱼丸炖萝卜丝",
+    "cat": "soup",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d249",
+    "name": "金汤栗子煲鸡",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d250",
+    "name": "小米粥",
+    "cat": "staple",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d251",
+    "name": "鸡蛋松饼",
+    "cat": "staple",
+    "emoji": "🥞",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d252",
+    "name": "滑蛋鸡腿饭",
+    "cat": "staple",
+    "emoji": "🍛",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d253",
+    "name": "酱黄瓜条",
+    "cat": "veggie",
+    "emoji": "🥒",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d254",
+    "name": "豆豉鲮鱼油麦菜",
+    "cat": "veggie",
+    "emoji": "🐟",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d255",
+    "name": "手撕包菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d256",
+    "name": "家常泡菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d257",
+    "name": "茼蒿拌口蘑",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d258",
+    "name": "葱烧豆腐",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d259",
+    "name": "番茄花菜",
+    "cat": "veggie",
+    "emoji": "🍅",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d260",
+    "name": "酸菜粉",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d261",
+    "name": "老醋黄瓜虾仁",
+    "cat": "veggie",
+    "emoji": "🥒",
+    "note": "",
+    "tags": ["凉菜", "海鲜"]
+  },
+  {
+    "id": "d262",
+    "name": "大葱炒鸡蛋",
+    "cat": "veggie",
+    "emoji": "🥚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d263",
+    "name": "醋溜豆芽",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
   }
 ]

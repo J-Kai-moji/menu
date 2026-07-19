@@ -2958,5 +2958,125 @@
     "emoji": "🥞",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d374",
+    "name": "羊肉冬瓜汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d375",
+    "name": "红焖羊排",
+    "cat": "soup",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d376",
+    "name": "葱㸆大排",
+    "cat": "soup",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d377",
+    "name": "火腿炒青蒜",
+    "cat": "soup",
+    "emoji": "🥓",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d378",
+    "name": "石锅大虾豆腐",
+    "cat": "soup",
+    "emoji": "🦐",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d379",
+    "name": "胡椒煎焗鸡",
+    "cat": "soup",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d380",
+    "name": "蒜香黄油烤生蚝",
+    "cat": "soup",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d381",
+    "name": "酸汤肥牛",
+    "cat": "soup",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d383",
+    "name": "辣土豆炖锅",
+    "cat": "soup",
+    "emoji": "🥔",
+    "note": "",
+    "tags": ["辣"]
+  },
+  {
+    "id": "d384",
+    "name": "广式羊腩煲",
+    "cat": "soup",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d385",
+    "name": "菠菜炒猪肝",
+    "cat": "soup",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d386",
+    "name": "五彩大拌菜",
+    "cat": "veggie",
+    "emoji": "🥗",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d387",
+    "name": "凉拌苦菊",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d389",
+    "name": "紫菜蛋花汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d390",
+    "name": "排骨玉米汤",
+    "cat": "soup",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
   }
 ]

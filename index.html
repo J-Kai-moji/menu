@@ -1195,6 +1195,21 @@
                     return true;
                 });
 
+                // 清理服务端已删除的菜品（ID以d开头但不在服务器数据中的）
+                const serverIds = new Set(serverDishes.map(sd => sd.id));
+                const beforeClean = dishes.length;
+                dishes = dishes.filter(d => {
+                    if (d.id && d.id.startsWith('d') && !serverIds.has(d.id)) {
+                        console.log('🧹 清理已删除菜品:', d.id, d.name);
+                        changed = true;
+                        return false;
+                    }
+                    return true;
+                });
+                if (dishes.length < beforeClean) {
+                    console.log('🧹 清理了 ' + (beforeClean - dishes.length) + ' 道已删除菜品');
+                }
+
                 if (changed) {
                     saveStore();
                     renderAll();

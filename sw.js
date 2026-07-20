@@ -1,4 +1,4 @@
-const CACHE = 'family-menu-v4';
+const CACHE = 'family-menu-v5';
 const ASSETS = [
   '/',
   '/manifest.json',

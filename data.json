@@ -3678,5 +3678,181 @@
     "emoji": "🥚",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d438",
+    "name": "干锅贡菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d439",
+    "name": "上汤萝卜菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d440",
+    "name": "地三鲜",
+    "cat": "veggie",
+    "emoji": "🍆",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d441",
+    "name": "生炝萝卜苗",
+    "cat": "veggie",
+    "emoji": "🥗",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d442",
+    "name": "泡萝卜",
+    "cat": "veggie",
+    "emoji": "🥒",
+    "note": "",
+    "tags": ["凉菜"]
+  },
+  {
+    "id": "d443",
+    "name": "包菜丝炒鸡蛋",
+    "cat": "veggie",
+    "emoji": "🥚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d444",
+    "name": "毛豆烧茄子",
+    "cat": "veggie",
+    "emoji": "🍆",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d445",
+    "name": "砂锅肉丸",
+    "cat": "soup",
+    "emoji": "🍲",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d446",
+    "name": "韩式辣牛肉汤",
+    "cat": "soup",
+    "emoji": "🍲",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d447",
+    "name": "豆腐丝瓜汤",
+    "cat": "soup",
+    "emoji": "🍲",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d448",
+    "name": "蒜香口蘑牛肉粒",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d449",
+    "name": "鲜椒碎牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d450",
+    "name": "葱姜捞鸡",
+    "cat": "meat",
+    "emoji": "🐔",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d451",
+    "name": "烤鸡翅",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d452",
+    "name": "板栗可乐鸡翅",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d453",
+    "name": "汉堡肉饼",
+    "cat": "meat",
+    "emoji": "🍔",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d454",
+    "name": "南瓜羹",
+    "cat": "staple",
+    "emoji": "🎃",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d455",
+    "name": "羊肉汆面",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d456",
+    "name": "蔬菜饼",
+    "cat": "staple",
+    "emoji": "🥞",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d457",
+    "name": "淮南牛肉汤",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d458",
+    "name": "海苔拌饭",
+    "cat": "staple",
+    "emoji": "🍚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d459",
+    "name": "三明治",
+    "cat": "staple",
+    "emoji": "🥪",
+    "note": "",
+    "tags": []
   }
 ]

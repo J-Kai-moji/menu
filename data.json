@@ -3854,5 +3854,16 @@
     "emoji": "🥪",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d460",
+    "name": "凉拌粉丝",
+    "cat": "veggie",
+    "emoji": "🥗",
+    "note": "",
+    "ingredients": "粉丝、胡萝卜、黄瓜",
+    "tags": [
+      "凉菜"
+    ]
   }
 ]

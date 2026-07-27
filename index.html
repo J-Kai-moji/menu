@@ -549,7 +549,12 @@
         .pick-cat {
             font-size: 14px;
             color: #999;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
+        }
+        .pick-ingredients {
+            font-size: 13px;
+            color: #8b9dc3;
+            margin-bottom: 16px;
         }
         /* ===== View Modal ===== */
         .view-overlay {
@@ -1529,6 +1534,7 @@
                     <div class="pick-emoji">${dish.emoji || '🍽️'}</div>
                     <div class="pick-name">${dish.name}</div>
                     <div class="pick-cat">${catLabel}</div>
+                    ${dish.ingredients ? `<div class="pick-ingredients">🥬 ${escHtml(dish.ingredients)}</div>` : ''}
                     <div class="pick-actions">
                         <button class="pick-btn pick-again" onclick="randomPick()">🎲 继续挑选</button>
                         <button class="pick-btn pick-add" onclick="pickAddToToday('${dish.id}')">✅ 加入菜单</button>

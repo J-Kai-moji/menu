@@ -1399,7 +1399,7 @@
             let result = currentTab === 'all' ? [...dishes] : dishes.filter(d => d.cat === currentTab);
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
-                result = result.filter(d => d.name.toLowerCase().includes(q));
+                result = result.filter(d => d.name.toLowerCase().includes(q) || (d.ingredients && d.ingredients.toLowerCase().includes(q)));
             }
             // 排序规则：按ID降序。d开头取数字，u开头取时间戳
             result.sort((a, b) => {

@@ -896,7 +896,7 @@
             <div class="view-tags" id="viewTags"></div>
             <div class="view-cat" id="viewCat"></div>
             <div id="viewIngredientsSection" style="display:none">
-                <div class="view-note-label">🥬 配料</div>
+                <div class="view-note-label">📋 配料</div>
                 <div class="view-note" id="viewIngredients"></div>
             </div>
             <div id="viewNoteSection" style="display:none">
@@ -1464,7 +1464,7 @@
                             }).join('')}
                             ${localBadge}
                         </div>
-                        ${d.ingredients ? `<div class="dish-ingredients">🥬 ${escHtml(d.ingredients)}</div>` : ''}
+                        ${d.ingredients ? `<div class="dish-ingredients">📋 ${escHtml(d.ingredients)}</div>` : ''}
                         ${d.note ? `<div class="dish-note">${escHtml(d.note)}</div>` : ''}
                     </div>
                     <div class="dish-want ${wantedClass}" onclick="event.stopPropagation(); toggleToday('${d.id}')" title="${escHtml(tooltip)}">
@@ -1534,7 +1534,7 @@
                     <div class="pick-emoji">${dish.emoji || '🍽️'}</div>
                     <div class="pick-name">${dish.name}</div>
                     <div class="pick-cat">${catLabel}</div>
-                    ${dish.ingredients ? `<div class="pick-ingredients">🥬 ${escHtml(dish.ingredients)}</div>` : ''}
+                    ${dish.ingredients ? `<div class="pick-ingredients">📋 ${escHtml(dish.ingredients)}</div>` : ''}
                     <div class="pick-actions">
                         <button class="pick-btn pick-again" onclick="randomPick()">🎲 继续挑选</button>
                         <button class="pick-btn pick-add" onclick="pickAddToToday('${dish.id}')">✅ 加入菜单</button>

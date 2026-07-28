@@ -967,7 +967,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '86';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '87';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1403,8 +1403,15 @@
         function getFilteredDishes() {
             let result = currentTab === 'all' ? [...dishes] : dishes.filter(d => d.cat === currentTab);
             if (searchQuery) {
-                const q = searchQuery.toLowerCase();
-                result = result.filter(d => d.name.toLowerCase().includes(q) || (d.ingredients && d.ingredients.toLowerCase().includes(q)));
+                let q = searchQuery.toLowerCase();
+                // 同义词扩展：番茄↔西红柿互相匹配
+                const terms = [q];
+                if (q.includes('番茄')) terms.push(q.replace(/番茄/g, '西红柿'));
+                if (q.includes('西红柿')) terms.push(q.replace(/西红柿/g, '番茄'));
+                result = result.filter(d => {
+                    const haystack = (d.name + '|' + (d.ingredients || '')).toLowerCase();
+                    return terms.some(t => haystack.includes(t));
+                });
             }
             // 排序规则：按ID降序。d开头取数字，u开头取时间戳
             result.sort((a, b) => {

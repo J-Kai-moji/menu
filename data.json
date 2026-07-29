@@ -3835,5 +3835,84 @@
     "tags": [
       "凉菜"
     ]
+  },
+  {
+    "id": "d461",
+    "name": "雪碧拌面",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": [],
+    "ingredients": "黄瓜、胡萝卜"
+  },
+  {
+    "id": "d462",
+    "name": "炒面",
+    "cat": "staple",
+    "emoji": "🍝",
+    "note": "",
+    "tags": [],
+    "ingredients": "鸡蛋、包菜、胡萝卜、火腿肠、公仔面"
+  },
+  {
+    "id": "d463",
+    "name": "生滚牛肉窝蛋粥",
+    "cat": "staple",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d464",
+    "name": "虾泥胡萝卜饼",
+    "cat": "staple",
+    "emoji": "🫓",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d465",
+    "name": "辣炒蛏子",
+    "cat": "meat",
+    "emoji": "🌶️",
+    "note": "",
+    "tags": [
+      "海鲜"
+    ]
+  },
+  {
+    "id": "d466",
+    "name": "酱牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d467",
+    "name": "西兰花虾仁蒸蛋",
+    "cat": "meat",
+    "emoji": "🥚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d468",
+    "name": "青椒酱",
+    "cat": "veggie",
+    "emoji": "🫑",
+    "note": "",
+    "tags": [
+      "凉菜"
+    ]
+  },
+  {
+    "id": "d469",
+    "name": "家庭鸡蛋汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": [],
+    "ingredients": "胡萝卜、木耳、干豆腐、鸡蛋"
   }
 ]

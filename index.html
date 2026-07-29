@@ -1408,6 +1408,10 @@
                 const terms = [q];
                 if (q.includes('番茄')) terms.push(q.replace(/番茄/g, '西红柿'));
                 if (q.includes('西红柿')) terms.push(q.replace(/西红柿/g, '番茄'));
+                // 同义词扩展：圆白菜↔卷心菜↔包菜互相匹配
+                if (q.includes('圆白菜')) { terms.push(q.replace(/圆白菜/g, '卷心菜')); terms.push(q.replace(/圆白菜/g, '包菜')); }
+                if (q.includes('卷心菜')) { terms.push(q.replace(/卷心菜/g, '圆白菜')); terms.push(q.replace(/卷心菜/g, '包菜')); }
+                if (q.includes('包菜')) { terms.push(q.replace(/包菜/g, '圆白菜')); terms.push(q.replace(/包菜/g, '卷心菜')); }
                 result = result.filter(d => {
                     const haystack = (d.name + '|' + (d.ingredients || '')).toLowerCase();
                     return terms.some(t => haystack.includes(t));

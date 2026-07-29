@@ -3922,5 +3922,117 @@
     "emoji": "🧃",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d471",
+    "name": "嫩牛滑蛋",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d472",
+    "name": "白灼虾",
+    "cat": "meat",
+    "emoji": "🦐",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d473",
+    "name": "香菇鸡肉小饼",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d474",
+    "name": "卤猪蹄",
+    "cat": "meat",
+    "emoji": "🐷",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d475",
+    "name": "脆皮鸡排",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d476",
+    "name": "油淋小人鲜",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d477",
+    "name": "藤椒排骨",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d478",
+    "name": "香菇鸡肉酱面",
+    "cat": "staple",
+    "emoji": "🍝",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d479",
+    "name": "番茄虾仁烩饭",
+    "cat": "staple",
+    "emoji": "🍛",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d480",
+    "name": "葱油拌面",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d481",
+    "name": "泡菜肥牛盖饭",
+    "cat": "staple",
+    "emoji": "🍛",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d482",
+    "name": "娃娃菜咸蛋黄汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d483",
+    "name": "煮毛豆",
+    "cat": "veggie",
+    "emoji": "🫘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d484",
+    "name": "大米冰淇淋",
+    "cat": "drink",
+    "emoji": "🍦",
+    "note": "",
+    "tags": []
   }
 ]

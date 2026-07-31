@@ -983,7 +983,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '87';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '88';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -2151,16 +2151,8 @@
 
         // ===== PWA: Service Worker =====
         if ('serviceWorker' in navigator) {
-            // 彻底清理所有旧 SW
-            navigator.serviceWorker.getRegistrations().then(regs => {
-                regs.forEach(r => r.unregister());
-                // 清除所有 SW 缓存
-                caches.keys().then(keys => {
-                    keys.forEach(k => caches.delete(k));
-                });
-            }).finally(() => {
-                navigator.serviceWorker.register('/menu/sw.js?v=' + APP_VERSION).catch(() => {});
-            });
+            // 正常注册：SW 自带 skipWaiting + claim，更新版本的 sw.js 会自动替代旧版
+            navigator.serviceWorker.register('/menu/sw.js?v=' + APP_VERSION).catch(() => {});
         }
 
         // ===== 长按删除菜品 =====

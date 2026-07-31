@@ -839,8 +839,7 @@
     <!-- Header -->
     <div class="header">
         <h1>🏠 家庭菜单</h1>
-        <div class="subtitle" id="headerSubtitle">今天想吃什么？ <span style="font-size:10px;opacity:0.7">v89</span></div>
-        <div id="debugInfo" style="font-size:10px;color:#ffe0a0;margin-top:2px;min-height:16px"></div>
+        <div class="subtitle" id="headerSubtitle">今天想吃什么？</div>
     </div>
 
     <!-- Tabs -->
@@ -986,12 +985,6 @@
 
         const APP_VERSION = '89';  // 每次更新菜品后改这个数字，APP自动刷新数据
 
-        // ★ 调试：在页头上显示关键状态
-        function debugLog(msg) {
-            const el = document.getElementById('debugInfo');
-            if (el) el.textContent = msg;
-            console.log('[DEBUG]', msg);
-        }
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1031,16 +1024,6 @@
         let selectedEmoji = '';
 
         // ===== Storage helpers =====
-        function loadStore() {
-            try {
-                dishes = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
-                wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
-                todayMenu = JSON.parse(localStorage.getItem(TODAY_KEY)) || [];
-                // 新的一天，本地今日菜单自动重置
-                if (localStorage.getItem(TODAY_DATE_KEY) !== todayDateStr()) todayMenu = [];
-            } catch { dishes = []; wants = {}; todayMenu = []; }
-        }
-
         function saveStore() {
             localStorage.setItem(STORE_KEY, JSON.stringify(dishes));
             localStorage.setItem(WANT_KEY, JSON.stringify(wants));
@@ -1093,23 +1076,8 @@
                     const data = JSON.parse(base64Decode(file.content));
                     return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
                 }
-                // 无 Token：走 CDN（多级回退，国内用户优先 jsDelivr）
-                const rawUrls = [
-                    'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/today.json',
-                    'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/today.json',
-                    'https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json',
-                    './today.json',
-                ];
-                let res = null;
-                for (const url of rawUrls) {
-                    try {
-                        const controller = new AbortController();
-                        const timeout = setTimeout(() => controller.abort(), 6000);
-                        res = await fetch(url, { cache: 'no-cache', signal: controller.signal });
-                        clearTimeout(timeout);
-                        if (res.ok) break;
-                    } catch (e) { /* 继续尝试下一个 */ }
-                }
+                // 无 Token：走 CDN 回退
+                const res = await fetchWithCdnFallback('today.json', 6000);
                 if (!res || !res.ok) return null;
                 const data = await res.json();
                 return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
@@ -1306,42 +1274,26 @@
           {"id":"d097","name":"排骨山药玉米汤","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]}
         ];
 
-        function ensureSeedData() {
-          // 首次使用：把内嵌菜品写入 localStorage，按顺序分配时间戳
-          if (!localStorage.getItem(STORE_KEY)) {
-            const baseTime = Date.now();
-            dishes = SEED_DISHES.map((d, i) => ({
-              ...d,
-              fromServer: true,
-              createdAt: baseTime - (SEED_DISHES.length - i) * 1000  // 越后面时间越新
-            }));
-            wants = {};
-            saveStore();
-            return true;
-          }
-          return false;
+        // ===== 通用 CDN 回退请求（带超时）=====
+        async function fetchWithCdnFallback(filename, timeoutMs) {
+            const urls = [
+                'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/' + filename,
+                'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/' + filename,
+                'https://raw.githubusercontent.com/' + GH_REPO + '/master/' + filename,
+                './' + filename,
+            ];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, { cache: 'no-cache', signal: AbortSignal.timeout(timeoutMs) });
+                    if (res.ok) return res;
+                } catch (e) { /* 下一个 */ }
+            }
+            return null;
         }
 
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
-        // 多级 CDN 回退：jsDelivr（国内可访问）→ Fastly → raw（海外）→ 本地
-        // 每个 URL 最多等 8 秒，避免某個 CDN 被封鎖時卡住整個頁面
         async function syncFromServer(showMsg) {
-            const urls = [
-                'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/data.json',
-                'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/data.json',
-                'https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json',
-                './data.json',  // 本地回退（相對於 /menu/ 即 GitHub Pages 部署目錄）
-            ];
-            let res = null;
-            for (const url of urls) {
-                try {
-                    const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 8000);
-                    res = await fetch(url, { cache: 'no-cache', signal: controller.signal });
-                    clearTimeout(timeout);
-                    if (res.ok) break;
-                } catch (e) { /* 繼續嘗試下一個 */ }
-            }
+            const res = await fetchWithCdnFallback('data.json', 8000);
             if (!res || !res.ok) return;
             try {
                 const serverDishes = await res.json();
@@ -1429,31 +1381,22 @@
         }
 
         async function initData() {
-            try {
-            debugLog('initData 开始, SEED=' + SEED_DISHES.length + '条');
-            // ★ 先用内嵌种子数据确保 dishes 一定不为空
-            const baseTime = Date.now();
-            dishes = SEED_DISHES.map((d, i) => ({
-                ...d,
-                fromServer: true,
-                createdAt: baseTime - (SEED_DISHES.length - i) * 1000
-            }));
-            debugLog('种子数据已设置, dishes=' + dishes.length + '条');
-            wants = {};
-
-            // 如果 localStorage 有数据，合并（本地数据优先覆盖种子数据）
-            const storedDishes = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-            debugLog('localStorage读取: ' + (storedDishes ? storedDishes.length + '条' : '无'));
+            // 加载本地数据（优先），种子数据作为兜底
+            const stored = localStorage.getItem(STORE_KEY);
+            let storedDishes = null;
+            try { storedDishes = JSON.parse(stored); } catch {}
             if (storedDishes && Array.isArray(storedDishes) && storedDishes.length > 0) {
-                // 以 localStorage 为主，种子数据为辅（补缺）
-                const localIds = new Set(storedDishes.map(d => d.id));
-                const merged = [...storedDishes];
-                dishes.forEach(d => {
-                    if (!localIds.has(d.id)) merged.push(d);
-                });
-                dishes = merged;
-                debugLog('合并后 dishes=' + dishes.length + '条');
+                dishes = storedDishes;
+            } else {
+                // 无本地数据时用内嵌种子数据
+                const baseTime = Date.now();
+                dishes = SEED_DISHES.map((d, i) => ({
+                    ...d,
+                    fromServer: true,
+                    createdAt: baseTime - (SEED_DISHES.length - i) * 1000
+                }));
             }
+
             // 加载 wants 和 todayMenu
             try {
                 wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
@@ -1471,17 +1414,17 @@
             });
             dishes = deduped;
             saveStore();
-            debugLog('去重保存后 dishes=' + dishes.length + '条');
 
-            // ★ 立即渲染 — 不依赖任何网络请求
+            // 立即渲染（不依赖任何网络请求）
             renderAll();
-            debugLog('renderAll 完成');
             updateBadge();
 
-            // 后台静默同步服务器数据
+            // 后台静默同步服务器数据（仅在有变化时重新渲染，避免闪烁）
+            const countBefore = dishes.length;
             syncFromServer().catch(() => {}).then(() => {
-                debugLog('服务器同步完成, dishes=' + dishes.length + '条');
-                renderAll();
+                if (dishes.length !== countBefore) {
+                    renderAll();
+                }
                 updateBadge();
             });
 
@@ -1492,25 +1435,21 @@
             }).catch(() => {});
 
             startTodayPolling();
-            } catch(e) {
-                debugLog('❌ initData错误: ' + e.message);
-                console.error(e);
-            }
         }
 
         function updateBadge() {
+            const badge = document.getElementById('todayBadge');
             if (todayMenu.length > 0) {
-                const badge = document.getElementById('todayBadge');
                 badge.style.display = 'flex';
                 badge.textContent = todayMenu.length;
+            } else {
+                badge.style.display = 'none';
             }
         }
 
         // ===== Render =====
         function getFilteredDishes() {
-            // ★ 终极兜底：如果 dishes 为空，回退到内嵌种子数据
-            const source = (dishes.length === 0) ? SEED_DISHES : dishes;
-            let result = currentTab === 'all' ? [...source] : source.filter(d => d.cat === currentTab);
+            let result = currentTab === 'all' ? dishes.slice() : dishes.filter(d => d.cat === currentTab);
             if (searchQuery) {
                 let q = searchQuery.toLowerCase();
                 // 同义词扩展：番茄↔西红柿互相匹配
@@ -1713,7 +1652,6 @@
             const list = document.getElementById('todayList');
             const empty = document.getElementById('todayEmpty');
             const subtitle = document.getElementById('todaySubtitle');
-            const badge = document.getElementById('todayBadge');
 
             // 更新标题为真实日期
             const now = new Date();
@@ -1721,12 +1659,7 @@
             title.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 今日菜单';
 
             // 更新导航徽标
-            if (todayMenu.length > 0) {
-                badge.style.display = 'flex';
-                badge.textContent = todayMenu.length;
-            } else {
-                badge.style.display = 'none';
-            }
+            updateBadge();
 
             if (todayMenu.length === 0) {
                 list.innerHTML = '';
@@ -2256,10 +2189,6 @@
         })();
 
         // ===== Init =====
-        window.onerror = function(msg, src, line, col, err) {
-            debugLog('❌ JS错误: ' + msg + ' (行' + line + ')');
-            return false;
-        };
         initData().then(() => {
             console.log('✅ 菜单加载完成，共 ' + dishes.length + ' 道菜');
             updateSyncStatus();

@@ -2,6 +2,7 @@ const CACHE = 'family-menu-v11';
 const BASE = '/menu';
 const ASSETS = [
   BASE + '/',
+  BASE + '/index.html',
   BASE + '/manifest.json',
   BASE + '/icon.svg',
 ];

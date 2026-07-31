@@ -954,7 +954,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '91';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '92';  // 每次更新菜品后改这个数字，APP自动刷新数据
 
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
@@ -1140,7 +1140,10 @@
         }
         // 切回前台立即拉一次
         document.addEventListener('visibilitychange', async () => {
-            if (!document.hidden) applyTodayRemote(await fetchTodayRemote());
+            if (!document.hidden) {
+                applyTodayRemote(await fetchTodayRemote());
+                if (dishes.length > 0) syncFromServer(false);  // 切回前台立即同步最新菜库
+            }
         });
 
         // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
@@ -1261,11 +1264,36 @@
         }
 
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
+        // ===== 同步失败自动重试（GitHub 访问不稳定时反复尝试直到成功）=====
+        let syncing = false;
+        let syncRetryTimer = null;
+        let syncRetryDelay = 30000;  // 首次重试间隔 30 秒，随后退避
+
+        function scheduleSyncRetry() {
+            if (syncRetryTimer) return;  // 已有重试排队
+            syncRetryTimer = setTimeout(() => {
+                syncRetryTimer = null;
+                syncFromServer(false);   // 静默重试
+            }, syncRetryDelay);
+            syncRetryDelay = Math.min(syncRetryDelay * 2, 300000);  // 30s→1m→2m→4m→5m(上限)
+        }
+
+        function resetSyncRetry() {
+            if (syncRetryTimer) { clearTimeout(syncRetryTimer); syncRetryTimer = null; }
+            syncRetryDelay = 30000;
+        }
+
         async function syncFromServer(showMsg) {
-            const res = await fetchWithCdnFallback('data.json', 8000);
-            if (!res || !res.ok) return;
+            if (syncing) return;
+            syncing = true;
             try {
+                const res = await fetchWithCdnFallback('data.json', 8000);
+                if (!res || !res.ok) {
+                    scheduleSyncRetry();  // 访问 GitHub 失败，稍后自动重试
+                    return;
+                }
                 const serverDishes = await res.json();
+                resetSyncRetry();  // 拉取成功，重试计时归零
                 if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
                 let changed = false;
@@ -1339,6 +1367,9 @@
             } catch (e) {
                 console.log('📡 离线模式，使用本地数据');
                 if (showMsg) showToast('📡 网络不可用');
+                scheduleSyncRetry();
+            } finally {
+                syncing = false;
             }
         }
 

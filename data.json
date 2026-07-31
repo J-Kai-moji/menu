@@ -4035,5 +4035,146 @@
     "emoji": "🍦",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d485",
+    "name": "朝鲜安东炖鸡",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": [],
+    "ingredients": "鸡肉、土豆、胡萝卜、粉条"
+  },
+  {
+    "id": "d486",
+    "name": "滑蛋牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d487",
+    "name": "卤牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d488",
+    "name": "口水鸡",
+    "cat": "meat",
+    "emoji": "🐔",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d489",
+    "name": "咖喱牛腩",
+    "cat": "meat",
+    "emoji": "🍛",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d490",
+    "name": "芥蓝炒牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d491",
+    "name": "蒜蓉粉丝蒸扇贝",
+    "cat": "meat",
+    "emoji": "🦪",
+    "note": "",
+    "tags": ["海鲜"]
+  },
+  {
+    "id": "d492",
+    "name": "冬阴功海鲜汤",
+    "cat": "meat",
+    "emoji": "🍲",
+    "note": "",
+    "tags": ["海鲜"],
+    "ingredients": "罗氏虾、青口、美贝、菌菇、鱿鱼"
+  },
+  {
+    "id": "d493",
+    "name": "青椒炒肉丝",
+    "cat": "meat",
+    "emoji": "🫑",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d494",
+    "name": "炒豆芽",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d495",
+    "name": "炝拌娃娃菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d496",
+    "name": "茭白炒鸡蛋",
+    "cat": "veggie",
+    "emoji": "🥚",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d497",
+    "name": "韩式海鲜葱饼",
+    "cat": "staple",
+    "emoji": "🥞",
+    "note": "",
+    "tags": ["海鲜"],
+    "ingredients": "小葱、鱿鱼、花甲、煎饼粉、鸡蛋"
+  },
+  {
+    "id": "d498",
+    "name": "葱油鸡饭",
+    "cat": "staple",
+    "emoji": "🍛",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d499",
+    "name": "寿喜锅",
+    "cat": "staple",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d500",
+    "name": "海鲜砂锅粥",
+    "cat": "staple",
+    "emoji": "🥣",
+    "note": "",
+    "tags": ["海鲜"],
+    "ingredients": "虾、瑶柱、香菇、螃蟹、花甲、冬菜"
+  },
+  {
+    "id": "d501",
+    "name": "哈佛蔬菜汤",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": [],
+    "ingredients": "南瓜、卷心菜、胡萝卜、洋葱"
   }
 ]

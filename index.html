@@ -954,7 +954,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '90';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '91';  // 每次更新菜品后改这个数字，APP自动刷新数据
 
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
@@ -1246,10 +1246,10 @@
         // ===== 通用 CDN 回退请求（带超时）=====
         async function fetchWithCdnFallback(filename, timeoutMs) {
             const urls = [
+                './' + filename,  // 同源(GitHub Pages)最快最稳：手机能打开页面就能拉到最新数据
                 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/' + filename,
                 'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/' + filename,
                 'https://raw.githubusercontent.com/' + GH_REPO + '/master/' + filename,
-                './' + filename,
             ];
             for (const url of urls) {
                 try {

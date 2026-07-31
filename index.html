@@ -314,31 +314,6 @@
         .empty-state .empty-icon { font-size: 64px; margin-bottom: 16px; }
         .empty-state p { font-size: 15px; line-height: 1.6; }
 
-        /* ===== FAB ===== */
-        .fab {
-            position: fixed;
-            bottom: 84px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #e74c3c, #f39c12);
-            color: #fff;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 6px 24px rgba(231, 76, 60, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .fab:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 30px rgba(231, 76, 60, 0.5);
-        }
-        .fab:active { transform: scale(0.95); }
 
         /* ===== Modal ===== */
         .modal-overlay {
@@ -826,7 +801,6 @@
             .dish-emoji { font-size: 24px; width: 36px; height: 36px; }
             .dish-name { font-size: 15px; }
             .dish-want { padding: 4px 8px; font-size: 12px; }
-            .fab { width: 48px; height: 48px; font-size: 24px; bottom: 80px; right: 20px; }
             .today-list { padding: 0 10px 100px; }
         }
     </style>
@@ -878,12 +852,9 @@
         <div class="dish-list" id="dishList"></div>
         <div class="empty-state" id="emptyState">
             <div class="empty-icon">📋</div>
-            <p>菜单还是空的呢～<br>点击右下角 <b>+</b> 来添加第一道菜吧！</p>
+            <p>菜单还是空的呢～</p>
         </div>
     </div>
-
-    <!-- FAB -->
-    <button class="fab" onclick="openModal()" title="添加菜品">+</button>
 
     </div><!-- /page-browse -->
 
@@ -1638,7 +1609,6 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + page).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
-            document.querySelector('.fab').style.display = page === 'browse' ? 'flex' : 'none';
             if (page === 'today') renderToday();
         }
 

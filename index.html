@@ -9,13 +9,13 @@
     <title>🏠 家庭菜单</title>
 
     <!-- PWA -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/menu/manifest.json">
     <meta name="theme-color" content="#e74c3c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="家庭菜单">
-    <link rel="apple-touch-icon" href="/icon.svg">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/menu/icon.svg">
+    <link rel="icon" href="/menu/icon.svg" type="image/svg+xml">
     <style>
         :root {
             --meat: #e74c3c;
@@ -1085,9 +1085,20 @@
                     const data = JSON.parse(base64Decode(file.content));
                     return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
                 }
-                // 无 Token：走 raw（CDN 有缓存，延迟几分钟，尽力而为）
-                const res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(), { cache: 'no-cache' });
-                if (!res.ok) return null;
+                // 无 Token：走 CDN（多级回退，国内用户优先 jsDelivr）
+                const rawUrls = [
+                    'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/today.json?t=' + Date.now(),
+                    'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/today.json?t=' + Date.now(),
+                    'https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(),
+                ];
+                let res = null;
+                for (const url of rawUrls) {
+                    try {
+                        res = await fetch(url, { cache: 'no-cache' });
+                        if (res.ok) break;
+                    } catch (e) { /* 继续尝试下一个 */ }
+                }
+                if (!res || !res.ok) return null;
                 const data = await res.json();
                 return { dishes: data.date === today ? (data.dishes || []) : [], stale: data.date !== today };
             } catch { return null; }
@@ -1300,13 +1311,22 @@
         }
 
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
+        // 多级 CDN 回退：jsDelivr（国内可访问）→ Fastly → raw（海外）→ 本地相对路径
         async function syncFromServer(showMsg) {
-            try {
-                let res = await fetch('https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json?t=' + Date.now(), { cache: 'no-cache' });
-                if (!res.ok) {
-                    res = await fetch('/data.json?t=' + Date.now(), { cache: 'no-cache' });
-                }
-                if (!res.ok) return;
+            const urls = [
+                'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/data.json?t=' + Date.now(),
+                'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/data.json?t=' + Date.now(),
+                'https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json?t=' + Date.now(),
+                '/data.json?t=' + Date.now(),
+            ];
+            let res = null;
+            for (const url of urls) {
+                try {
+                    res = await fetch(url, { cache: 'no-cache' });
+                    if (res.ok) break;
+                } catch (e) { /* 继续尝试下一个 */ }
+            }
+            if (!res || !res.ok) return;
                 const serverDishes = await res.json();
                 if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
@@ -2139,7 +2159,7 @@
                     keys.forEach(k => caches.delete(k));
                 });
             }).finally(() => {
-                navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION).catch(() => {});
+                navigator.serviceWorker.register('/menu/sw.js?v=' + APP_VERSION).catch(() => {});
             });
         }
 

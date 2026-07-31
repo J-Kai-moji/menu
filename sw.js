@@ -1,8 +1,9 @@
-const CACHE = 'family-menu-v9';
+const CACHE = 'family-menu-v10';
+const BASE = '/menu';
 const ASSETS = [
-  '/',
-  '/manifest.json',
-  '/icon.svg',
+  BASE + '/',
+  BASE + '/manifest.json',
+  BASE + '/icon.svg',
 ];
 
 // Install: pre-cache static shells (NOT index.html or data.json — those stay fresh)
@@ -28,7 +29,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
   // index.html and data.json: network-first (always get latest)
-  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/data.json') {
+  if (url.pathname === BASE + '/' || url.pathname === BASE + '/index.html' || url.pathname === BASE + '/data.json') {
     e.respondWith(
       fetch(e.request)
         .then(res => {

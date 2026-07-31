@@ -3933,26 +3933,10 @@
     "tags": []
   },
   {
-    "id": "d472",
-    "name": "白灼虾",
-    "cat": "meat",
-    "emoji": "🦐",
-    "note": "",
-    "tags": ["海鲜"]
-  },
-  {
     "id": "d473",
     "name": "香菇鸡肉小饼",
     "cat": "meat",
     "emoji": "🍗",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d474",
-    "name": "卤猪蹄",
-    "cat": "meat",
-    "emoji": "🐷",
     "note": "",
     "tags": []
   },

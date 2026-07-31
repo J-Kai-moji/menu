@@ -1087,14 +1087,18 @@
                 }
                 // 无 Token：走 CDN（多级回退，国内用户优先 jsDelivr）
                 const rawUrls = [
-                    'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/today.json?t=' + Date.now(),
-                    'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/today.json?t=' + Date.now(),
-                    'https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json?t=' + Date.now(),
+                    'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/today.json',
+                    'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/today.json',
+                    'https://raw.githubusercontent.com/' + GH_REPO + '/master/today.json',
+                    './today.json',
                 ];
                 let res = null;
                 for (const url of rawUrls) {
                     try {
-                        res = await fetch(url, { cache: 'no-cache' });
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 6000);
+                        res = await fetch(url, { cache: 'no-cache', signal: controller.signal });
+                        clearTimeout(timeout);
                         if (res.ok) break;
                     } catch (e) { /* 继续尝试下一个 */ }
                 }
@@ -1311,20 +1315,24 @@
         }
 
         // ===== Sync: 从 data.json 拉取菜库，确保本地有全部服务器菜品 =====
-        // 多级 CDN 回退：jsDelivr（国内可访问）→ Fastly → raw（海外）→ 本地相对路径
+        // 多级 CDN 回退：jsDelivr（国内可访问）→ Fastly → raw（海外）→ 本地
+        // 每个 URL 最多等 8 秒，避免某個 CDN 被封鎖時卡住整個頁面
         async function syncFromServer(showMsg) {
             const urls = [
-                'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/data.json?t=' + Date.now(),
-                'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/data.json?t=' + Date.now(),
-                'https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json?t=' + Date.now(),
-                '/data.json?t=' + Date.now(),
+                'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@master/data.json',
+                'https://fastly.jsdelivr.net/gh/' + GH_REPO + '@master/data.json',
+                'https://raw.githubusercontent.com/' + GH_REPO + '/master/data.json',
+                './data.json',  // 本地回退（相對於 /menu/ 即 GitHub Pages 部署目錄）
             ];
             let res = null;
             for (const url of urls) {
                 try {
-                    res = await fetch(url, { cache: 'no-cache' });
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 8000);
+                    res = await fetch(url, { cache: 'no-cache', signal: controller.signal });
+                    clearTimeout(timeout);
                     if (res.ok) break;
-                } catch (e) { /* 继续尝试下一个 */ }
+                } catch (e) { /* 繼續嘗試下一個 */ }
             }
             if (!res || !res.ok) return;
                 const serverDishes = await res.json();
@@ -1414,7 +1422,7 @@
         async function initData() {
             ensureSeedData();           // 内嵌种子数据，保证一定有菜
             loadStore();                 // 加载本地（含种子数据 + 用户自增）
-            // 去重：同ID只保留一份，同ID优先保留 fromServer 的
+            // 去重：同ID只保留一份
             const deduped = [];
             const seen = new Set();
             dishes.forEach(d => {
@@ -1424,11 +1432,27 @@
             });
             dishes = deduped;
             saveStore();
-            await syncFromServer();      // 拉取服务器新增菜品
-            applyTodayRemote(await fetchTodayRemote(), true);  // 拉取云端今日菜单（静默）
-            startTodayPolling();         // 开启今日菜单轮询
+
+            // ★ 先渲染本地数据，不等网络 — 确保页面立即可见
             renderAll();
-            // 更新今日菜单徽标
+            updateBadge();
+
+            // 后台静默同步服务器数据（网络慢/被封也不影响页面显示）
+            syncFromServer().catch(() => {}).then(() => {
+                renderAll();  // 同步完成后刷新
+                updateBadge();
+            });
+
+            // 后台拉取今日菜单
+            fetchTodayRemote().then(remote => {
+                applyTodayRemote(remote, true);
+                updateBadge();
+            }).catch(() => {});
+
+            startTodayPolling();         // 开启今日菜单轮询
+        }
+
+        function updateBadge() {
             if (todayMenu.length > 0) {
                 const badge = document.getElementById('todayBadge');
                 badge.style.display = 'flex';

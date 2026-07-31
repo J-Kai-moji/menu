@@ -983,7 +983,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '88';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '89';  // 每次更新菜品后改这个数字，APP自动刷新数据
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
         const TODAY_KEY = 'fm_today';
@@ -1420,9 +1420,34 @@
         }
 
         async function initData() {
-            ensureSeedData();           // 内嵌种子数据，保证一定有菜
-            loadStore();                 // 加载本地（含种子数据 + 用户自增）
-            // 去重：同ID只保留一份
+            // ★ 先用内嵌种子数据确保 dishes 一定不为空
+            const baseTime = Date.now();
+            dishes = SEED_DISHES.map((d, i) => ({
+                ...d,
+                fromServer: true,
+                createdAt: baseTime - (SEED_DISHES.length - i) * 1000
+            }));
+            wants = {};
+
+            // 如果 localStorage 有数据，合并（本地数据优先覆盖种子数据）
+            const storedDishes = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+            if (storedDishes && Array.isArray(storedDishes) && storedDishes.length > 0) {
+                // 以 localStorage 为主，种子数据为辅（补缺）
+                const localIds = new Set(storedDishes.map(d => d.id));
+                const merged = [...storedDishes];
+                dishes.forEach(d => {
+                    if (!localIds.has(d.id)) merged.push(d);
+                });
+                dishes = merged;
+            }
+            // 加载 wants 和 todayMenu
+            try {
+                wants = JSON.parse(localStorage.getItem(WANT_KEY)) || {};
+                todayMenu = JSON.parse(localStorage.getItem(TODAY_KEY)) || [];
+                if (localStorage.getItem(TODAY_DATE_KEY) !== todayDateStr()) todayMenu = [];
+            } catch { wants = {}; todayMenu = []; }
+
+            // 去重
             const deduped = [];
             const seen = new Set();
             dishes.forEach(d => {
@@ -1433,13 +1458,13 @@
             dishes = deduped;
             saveStore();
 
-            // ★ 先渲染本地数据，不等网络 — 确保页面立即可见
+            // ★ 立即渲染 — 不依赖任何网络请求
             renderAll();
             updateBadge();
 
-            // 后台静默同步服务器数据（网络慢/被封也不影响页面显示）
+            // 后台静默同步服务器数据
             syncFromServer().catch(() => {}).then(() => {
-                renderAll();  // 同步完成后刷新
+                renderAll();
                 updateBadge();
             });
 
@@ -1449,7 +1474,7 @@
                 updateBadge();
             }).catch(() => {});
 
-            startTodayPolling();         // 开启今日菜单轮询
+            startTodayPolling();
         }
 
         function updateBadge() {
@@ -1462,7 +1487,9 @@
 
         // ===== Render =====
         function getFilteredDishes() {
-            let result = currentTab === 'all' ? [...dishes] : dishes.filter(d => d.cat === currentTab);
+            // ★ 终极兜底：如果 dishes 为空，回退到内嵌种子数据
+            const source = (dishes.length === 0) ? SEED_DISHES : dishes;
+            let result = currentTab === 'all' ? [...source] : source.filter(d => d.cat === currentTab);
             if (searchQuery) {
                 let q = searchQuery.toLowerCase();
                 // 同义词扩展：番茄↔西红柿互相匹配

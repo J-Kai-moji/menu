@@ -255,6 +255,7 @@
         .tag-seafood { background: #dbeafe; color: #2563eb; }
         .tag-spicy { background: #fee2e2; color: #dc2626; }
         .tag-cold { background: #ccfbf1; color: #0d9488; }
+        .tag-bili { background: linear-gradient(135deg, #fb7299, #00aeec); color: #fff; }
         .dish-note {
             font-size: 12px;
             color: var(--text-secondary);
@@ -1522,7 +1523,7 @@
                         <div class="dish-name">
                             <span class="dish-name-text">${escHtml(d.name)}</span>
                             ${(d.tags || []).map(t => {
-                                const cls = { '海鲜': 'seafood', '辣': 'spicy', '凉菜': 'cold' }[t] || '';
+                                const cls = { '海鲜': 'seafood', '辣': 'spicy', '凉菜': 'cold', 'B站': 'bili', 'bilibili': 'bili' }[t] || '';
                                 return `<span class="tag tag-${cls}">${t}</span>`;
                             }).join('')}
                             ${localBadge}
@@ -1766,7 +1767,7 @@
             const tagsContainer = document.getElementById('viewTags');
             if (dish.tags && dish.tags.length > 0) {
                 tagsContainer.innerHTML = dish.tags.map(t => {
-                    const cls = { '海鲜': 'seafood', '辣': 'spicy', '凉菜': 'cold' }[t] || '';
+                    const cls = { '海鲜': 'seafood', '辣': 'spicy', '凉菜': 'cold', 'B站': 'bili', 'bilibili': 'bili' }[t] || '';
                     return `<span class="tag tag-${cls}">${t}</span>`;
                 }).join('');
                 tagsContainer.style.display = 'flex';

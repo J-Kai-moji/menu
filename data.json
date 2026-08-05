@@ -4073,5 +4073,39 @@
     "note": "",
     "tags": [],
     "ingredients": "南瓜、卷心菜、胡萝卜、洋葱"
+  },
+  {
+    "id": "d502",
+    "name": "春笋素三鲜",
+    "cat": "soup",
+    "emoji": "🥣",
+    "note": "",
+    "tags": ["B站"],
+    "ingredients": "春笋、香菇、木耳、胡萝卜、杂菜"
+  },
+  {
+    "id": "d503",
+    "name": "猪肉味增汤",
+    "cat": "soup",
+    "emoji": "🍲",
+    "note": "",
+    "tags": ["B站"],
+    "ingredients": "白萝卜、牛蒡、胡萝卜、白洋葱、豆腐、魔芋、五花肉片、味增"
+  },
+  {
+    "id": "d504",
+    "name": "酸辣包菜丝",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": ["B站"]
+  },
+  {
+    "id": "d505",
+    "name": "葱拌牛肉",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": ["B站"]
   }
 ]

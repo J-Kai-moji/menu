@@ -4107,5 +4107,130 @@
     "emoji": "🥩",
     "note": "",
     "tags": ["B站"]
+  },
+  {
+    "id": "d506",
+    "name": "荷塘月色",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": [],
+    "ingredients": "荷兰豆、莲藕、木耳、虾仁"
+  },
+  {
+    "id": "d507",
+    "name": "上汤萝卜苗",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d508",
+    "name": "马蹄饮",
+    "cat": "drink",
+    "emoji": "🧃",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d509",
+    "name": "苹果茶",
+    "cat": "drink",
+    "emoji": "🍎",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d510",
+    "name": "红烧黄花鱼",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d511",
+    "name": "匈牙利炖牛肉",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": [],
+    "ingredients": "牛肉、黄油、白洋葱、胡萝卜、彩椒、酸奶油"
+  },
+  {
+    "id": "d512",
+    "name": "土豆炖牛肉",
+    "cat": "meat",
+    "emoji": "🥘",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d513",
+    "name": "白切牛腩",
+    "cat": "meat",
+    "emoji": "🥩",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d514",
+    "name": "洋葱奶油炖鸡",
+    "cat": "meat",
+    "emoji": "🍗",
+    "note": "",
+    "tags": [],
+    "ingredients": "鸡腿肉、黄油、白洋葱、口蘑、奶油"
+  },
+  {
+    "id": "d515",
+    "name": "杂鱼煲",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d516",
+    "name": "黄豆猪蹄汤",
+    "cat": "soup",
+    "emoji": "🍖",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d517",
+    "name": "砂锅肉丸汤",
+    "cat": "soup",
+    "emoji": "🍲",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d518",
+    "name": "杂鱼汤",
+    "cat": "soup",
+    "emoji": "🐟",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d519",
+    "name": "红薯烤牛奶",
+    "cat": "staple",
+    "emoji": "🍠",
+    "note": "",
+    "tags": [],
+    "ingredients": "红薯、黄油、炼乳、牛奶"
+  },
+  {
+    "id": "d520",
+    "name": "南瓜烤蛋",
+    "cat": "staple",
+    "emoji": "🎃",
+    "note": "",
+    "tags": [],
+    "ingredients": "贝贝南瓜、牛奶、鸡蛋"
   }
 ]

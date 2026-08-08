@@ -4232,5 +4232,16 @@
     "note": "",
     "tags": [],
     "ingredients": "贝贝南瓜、牛奶、鸡蛋"
+  },
+  {
+    "id": "d521",
+    "name": "韭菜辛拉面",
+    "cat": "staple",
+    "emoji": "🍜",
+    "note": "",
+    "tags": [
+      "辣"
+    ],
+    "ingredients": "韭菜、香菇、大葱、鸡蛋"
   }
 ]

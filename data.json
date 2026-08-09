@@ -369,7 +369,7 @@
   {
     "id": "d050",
     "name": "清汤牛腩",
-    "cat": "meat",
+    "cat": "soup",
     "emoji": "🥘",
     "note": "",
     "tags": []
@@ -1005,7 +1005,7 @@
   {
     "id": "d131",
     "name": "清炖牛肉",
-    "cat": "meat",
+    "cat": "soup",
     "emoji": "🥘",
     "note": "",
     "tags": []
@@ -1805,7 +1805,7 @@
   {
     "id": "d227",
     "name": "羊肉汆丸子",
-    "cat": "meat",
+    "cat": "soup",
     "emoji": "🥩",
     "note": "",
     "tags": []
@@ -2714,7 +2714,7 @@
   {
     "id": "d334",
     "name": "腌笃鲜",
-    "cat": "meat",
+    "cat": "soup",
     "emoji": "🥘",
     "note": "",
     "tags": [],
@@ -3042,7 +3042,7 @@
   {
     "id": "d371",
     "name": "葱㸆大排",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🥘",
     "note": "",
     "tags": []
@@ -3050,7 +3050,7 @@
   {
     "id": "d372",
     "name": "火腿炒青蒜",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🥓",
     "note": "",
     "tags": []
@@ -3058,7 +3058,7 @@
   {
     "id": "d373",
     "name": "石锅大虾豆腐",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🦐",
     "note": "",
     "tags": [
@@ -3068,7 +3068,7 @@
   {
     "id": "d374",
     "name": "胡椒煎焗鸡",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🍗",
     "note": "",
     "tags": []
@@ -3076,7 +3076,7 @@
   {
     "id": "d375",
     "name": "蒜香黄油烤生蚝",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🦪",
     "note": "",
     "tags": [
@@ -3094,7 +3094,7 @@
   {
     "id": "d378",
     "name": "辣土豆炖锅",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🥔",
     "note": "",
     "tags": [
@@ -3104,7 +3104,7 @@
   {
     "id": "d379",
     "name": "广式羊腩煲",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🥘",
     "note": "",
     "tags": []
@@ -3112,7 +3112,7 @@
   {
     "id": "d380",
     "name": "菠菜炒猪肝",
-    "cat": "soup",
+    "cat": "meat",
     "emoji": "🥬",
     "note": "",
     "tags": []
@@ -4001,7 +4001,7 @@
   {
     "id": "d492",
     "name": "冬阴功海鲜汤",
-    "cat": "meat",
+    "cat": "soup",
     "emoji": "🍲",
     "note": "",
     "tags": ["海鲜"],

@@ -4259,5 +4259,16 @@
     "note": "",
     "tags": [],
     "ingredients": "猪油、西红柿、蘑菇、青菜、瘦肉、豆腐"
+  },
+  {
+    "id": "d523",
+    "name": "辣椒炒排骨",
+    "cat": "meat",
+    "emoji": "🍖",
+    "note": "",
+    "tags": [
+      "B站"
+    ],
+    "ingredients": "排骨、青辣椒"
   }
 ]

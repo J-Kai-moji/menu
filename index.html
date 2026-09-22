@@ -791,6 +791,54 @@
             cursor: pointer;
         }
 
+        /* ===== 锁屏 ===== */
+        #lockScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 24px;
+            background: linear-gradient(160deg, #e74c3c 0%, #a93226 100%);
+            color: #fff;
+        }
+        #lockScreen .lock-icon { font-size: 54px; line-height: 1; }
+        #lockScreen h2 { font-size: 20px; font-weight: 600; margin: 0; }
+        #lockScreen p { font-size: 13px; opacity: .85; margin: 0; text-align: center; }
+        #lockScreen input,
+        #lockScreen button {
+            width: 100%;
+            max-width: 280px;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        #lockScreen input {
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            background: rgba(255, 255, 255, .95);
+            color: #333;
+        }
+        #lockScreen button {
+            background: rgba(0, 0, 0, .28);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        #lockScreen button:disabled { opacity: .6; }
+        #lockError {
+            min-height: 18px;
+            font-size: 13px;
+            color: #ffe0a0;
+            text-align: center;
+        }
+
         /* ===== Responsive ===== */
         @media (max-width: 400px) {
             .header { padding: 20px 16px 18px; }
@@ -808,6 +856,16 @@
     </style>
 </head>
 <body>
+
+    <!-- ==================== 锁屏 ==================== -->
+    <div id="lockScreen">
+        <div class="lock-icon">🔒</div>
+        <h2>私人菜单</h2>
+        <p>请输入访问密码</p>
+        <input id="lockInput" type="password" autocomplete="current-password" placeholder="密码">
+        <div id="lockError"></div>
+        <button id="lockBtn" onclick="submitPassword()">解锁</button>
+    </div>
 
     <!-- ==================== 菜单浏览页 ==================== -->
     <div id="page-browse" class="page active">
@@ -956,7 +1014,12 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '103';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '104';  // 每次更新菜品后改这个数字，APP自动刷新数据
+
+        // 访问控制：菜库在 data.json 中以密文存放，密码用于派生解密密钥
+        const PW_KEY = 'fm_pw_v1';        // 已解锁的密码（仅存在机主手机）
+        const META_KEY = 'fm_enc_meta';   // 派生参数 salt/iter，用于离线解锁
+        const ENC_ITER = 200000;
 
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
@@ -1149,104 +1212,7 @@
         });
 
         // ===== Seed Data: 内嵌初始菜品，保证一定可见 =====
-        const SEED_DISHES = [
-          {"id":"d001","name":"广式萝卜牛腩煲","cat":"meat","emoji":"🥘","note":"","tags":[],"ingredients":""},
-          {"id":"d002","name":"豆豉鲮鱼炒油麦菜","cat":"meat","emoji":"🐟","note":"","tags":["海鲜"],"ingredients":""},
-          {"id":"d003","name":"葱姜炒花甲","cat":"meat","emoji":"🦪","note":"","tags":["海鲜"],"ingredients":"花甲、葱、姜"},
-          {"id":"d004","name":"黄焖鸡","cat":"meat","emoji":"🍗","note":"","tags":[],"ingredients":"鸡腿、香菇、青椒"},
-          {"id":"d005","name":"海南鸡饭","cat":"staple","emoji":"🐔","note":"","tags":[],"ingredients":"鸡腿肉、红葱头、小葱"},
-          {"id":"d006","name":"汉堡肉盖饭","cat":"staple","emoji":"🍛","note":"","tags":[],"ingredients":""},
-          {"id":"d007","name":"三杯鸡","cat":"meat","emoji":"🍗","note":"","tags":[],"ingredients":"鸡腿、米酒、酱油、麻油、九层塔"},
-          {"id":"d008","name":"土豆鸡块","cat":"meat","emoji":"🥔","note":"","tags":[],"ingredients":"土豆、鸡肉"},
-          {"id":"d009","name":"卤肉饭","cat":"staple","emoji":"🍖","note":"","tags":[],"ingredients":""},
-          {"id":"d010","name":"新疆烤包子","cat":"staple","emoji":"🥟","note":"","tags":[],"ingredients":"羊肉、洋葱、面粉"},
-          {"id":"d011","name":"辣椒炒鸡","cat":"meat","emoji":"🌶️","note":"","tags":["辣"],"ingredients":"鸡肉、辣椒"},
-          {"id":"d012","name":"筋头巴脑炖土豆","cat":"meat","emoji":"🥘","note":"","tags":[],"ingredients":""},
-          {"id":"d013","name":"白菜炖豆腐","cat":"veggie","emoji":"🥬","note":"","tags":[],"ingredients":"白菜、豆腐"},
-          {"id":"d014","name":"韭菜炒鸡蛋","cat":"veggie","emoji":"🥚","note":"","tags":[],"ingredients":"韭菜、鸡蛋"},
-          {"id":"d015","name":"尖椒干豆腐","cat":"veggie","emoji":"🫑","note":"","tags":[],"ingredients":""},
-          {"id":"d016","name":"裙带菜牛肉汤","cat":"soup","emoji":"🥣","note":"","tags":[],"ingredients":""},
-          {"id":"d017","name":"番茄时蔬汤","cat":"soup","emoji":"🍅","note":"","tags":[],"ingredients":"番茄、时令蔬菜"},
-          {"id":"d018","name":"番茄清炖牛肉","cat":"soup","emoji":"🥘","note":"","tags":[],"ingredients":"番茄、牛肉"},
-          {"id":"d019","name":"东南亚鸡饭","cat":"staple","emoji":"🐔","note":"","tags":[],"ingredients":""},
-          {"id":"d020","name":"炝锅面","cat":"staple","emoji":"🍜","note":"","tags":[],"ingredients":""},
-          {"id":"d021","name":"米饭","cat":"staple","emoji":"🍚","note":"","tags":[],"ingredients":"大米"},
-          {"id":"d022","name":"杂粮粥","cat":"staple","emoji":"🥣","note":"","tags":[],"ingredients":""},
-          {"id":"d023","name":"白粥","cat":"staple","emoji":"🥣","note":"","tags":[],"ingredients":"大米"},
-          {"id":"d024","name":"盐葱酱牛舌盖饭","cat":"staple","emoji":"🍛","note":"","tags":[],"ingredients":""},
-          {"id":"d025","name":"东北老式拌饭","cat":"staple","emoji":"🍚","note":"","tags":[],"ingredients":""},
-          {"id":"d027","name":"炝拌白菜心","cat":"veggie","emoji":"🥬","note":"","tags":[],"ingredients":""},
-          {"id":"d028","name":"蒜蓉蒸排骨","cat":"meat","emoji":"🥩","note":"","tags":[],"ingredients":"排骨、蒜"},
-
-          {"id":"d031","name":"柠檬鸡中翅","cat":"meat","emoji":"🍗","note":"","ingredients":"","tags":[]},
-          {"id":"d032","name":"板栗焖鸡","cat":"meat","emoji":"🍗","note":"","ingredients":"","tags":[]},
-          {"id":"d033","name":"烤羊排","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d034","name":"猪头肉拌黄瓜","cat":"meat","emoji":"🥒","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d035","name":"沙姜焗鸡","cat":"meat","emoji":"🍗","note":"","ingredients":"","tags":[]},
-          {"id":"d036","name":"酸菜炖排骨","cat":"meat","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d037","name":"油焖大虾","cat":"meat","emoji":"🦐","note":"","ingredients":"虾","tags":["海鲜"]},
-          {"id":"d038","name":"大盘鸡","cat":"meat","emoji":"🍗","note":"","ingredients":"","tags":[]},
-          {"id":"d039","name":"胸口爆包菜","cat":"meat","emoji":"🥬","note":"","ingredients":"","tags":[]},
-          {"id":"d040","name":"酱油水烧黄鱼","cat":"meat","emoji":"🐟","note":"","ingredients":"","tags":["海鲜"]},
-          {"id":"d041","name":"土鸡菌菇汤","cat":"soup","emoji":"🍲","note":"","ingredients":"","tags":[]},
-          {"id":"d042","name":"咸排骨煲苦瓜","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d043","name":"脊骨萝卜汤","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d044","name":"五花肉泡菜豆腐汤","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d045","name":"麻辣拌","cat":"staple","emoji":"🌶️","note":"","ingredients":"","tags":["辣"]},
-          {"id":"d046","name":"黄油拌饭","cat":"staple","emoji":"🍚","note":"","ingredients":"","tags":[]},
-          {"id":"d047","name":"腊肠焖饭","cat":"staple","emoji":"🍚","note":"","ingredients":"","tags":[]},
-          {"id":"d048","name":"糖醋排骨","cat":"meat","emoji":"🥩","note":"","ingredients":"排骨","tags":[]},
-          {"id":"d049","name":"番茄炖牛肉","cat":"meat","emoji":"🍅","note":"","ingredients":"番茄、牛肉","tags":[]},
-          {"id":"d050","name":"清汤牛腩","cat":"meat","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d051","name":"蒜泥茄子","cat":"veggie","emoji":"🍆","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d052","name":"拆骨肉炒辣椒","cat":"meat","emoji":"🌶️","note":"","ingredients":"","tags":["辣"]},
-          {"id":"d053","name":"拆骨肉炖白菜豆腐","cat":"meat","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d054","name":"葱爆羊肉","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d055","name":"生炒排骨","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d056","name":"酱炖豆腐","cat":"veggie","emoji":"🧈","note":"","ingredients":"","tags":[]},
-          {"id":"d057","name":"麻婆豆腐","cat":"veggie","emoji":"🧈","note":"","ingredients":"豆腐、肉末","tags":["辣"]},
-          {"id":"d058","name":"鱼香茄子","cat":"veggie","emoji":"🍆","note":"","ingredients":"","tags":[]},
-          {"id":"d059","name":"青椒火腿土豆片","cat":"veggie","emoji":"🥔","note":"","ingredients":"","tags":[]},
-          {"id":"d060","name":"五花肉芸豆烧土豆","cat":"meat","emoji":"🥔","note":"","ingredients":"","tags":[]},
-          {"id":"d061","name":"排骨冬瓜汤","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d062","name":"洋葱木耳拌香菜","cat":"veggie","emoji":"🧅","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d063","name":"胡萝卜炒肉","cat":"meat","emoji":"🥕","note":"","ingredients":"","tags":[]},
-
-
-          {"id":"d065","name":"扇贝炖豆腐","cat":"meat","emoji":"🦪","note":"","ingredients":"","tags":["海鲜"]},
-          {"id":"d066","name":"溜肉片","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d067","name":"桑拿鸡","cat":"meat","emoji":"🍗","note":"","ingredients":"","tags":[]},
-          {"id":"d068","name":"烤棒骨","cat":"meat","emoji":"🦴","note":"","ingredients":"","tags":[]},
-          {"id":"d069","name":"溜豆腐","cat":"veggie","emoji":"🧈","note":"","ingredients":"","tags":[]},
-          {"id":"d070","name":"老虎菜","cat":"veggie","emoji":"🥗","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d071","name":"肉末雪菜炒毛豆","cat":"veggie","emoji":"🥬","note":"","ingredients":"","tags":[]},
-          {"id":"d072","name":"上汤娃娃菜","cat":"veggie","emoji":"🥬","note":"","ingredients":"","tags":[]},
-          {"id":"d073","name":"紫菜鸡蛋汤","cat":"soup","emoji":"🥣","note":"","ingredients":"","tags":[]},
-          {"id":"d074","name":"红烧牛肉面","cat":"staple","emoji":"🍜","note":"","ingredients":"","tags":[]},
-          {"id":"d075","name":"手把羊肉","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d076","name":"腊八蒜烧肥肠","cat":"meat","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d077","name":"红烧肉烧土豆","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d078","name":"京酱肉丝","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":[]},
-          {"id":"d079","name":"白菜粉条炖排骨","cat":"meat","emoji":"🥬","note":"","ingredients":"","tags":[]},
-          {"id":"d080","name":"砂锅焗鱼头","cat":"meat","emoji":"🐟","note":"","ingredients":"","tags":["海鲜"]},
-          {"id":"d081","name":"白菜炒肉丝","cat":"meat","emoji":"🥬","note":"","ingredients":"","tags":[]},
-
-          {"id":"d083","name":"酸菜蚕豆烧黄鱼","cat":"meat","emoji":"🐟","note":"","ingredients":"","tags":["海鲜"]},
-          {"id":"d084","name":"辣炒花甲","cat":"meat","emoji":"🦪","note":"","ingredients":"","tags":["海鲜","辣"]},
-          {"id":"d085","name":"黄瓜拌蚬子肉","cat":"meat","emoji":"🥒","note":"","ingredients":"","tags":["凉菜","海鲜"]},
-          {"id":"d086","name":"酸菜拆骨肉","cat":"meat","emoji":"🥘","note":"","ingredients":"","tags":[]},
-          {"id":"d087","name":"芹菜炒牛肉","cat":"meat","emoji":"🥩","note":"","ingredients":"芹菜、牛肉","tags":[]},
-          {"id":"d088","name":"荞葱炒鲍鱼","cat":"meat","emoji":"🦪","note":"","ingredients":"","tags":["海鲜"]},
-          {"id":"d089","name":"排骨炖土豆","cat":"meat","emoji":"🥩","note":"","ingredients":"排骨、土豆","tags":[]},
-          {"id":"d090","name":"香菜拌牛肉","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d091","name":"午餐肉拌豆芽","cat":"meat","emoji":"🥩","note":"","ingredients":"","tags":["凉菜"]},
-          {"id":"d092","name":"青椒豆芽炒鸡蛋","cat":"veggie","emoji":"🥚","note":"","ingredients":"","tags":[]},
-          {"id":"d093","name":"醋溜豆腐","cat":"veggie","emoji":"🧈","note":"","ingredients":"","tags":[]},
-          {"id":"d094","name":"清汤面","cat":"staple","emoji":"🍜","note":"","ingredients":"","tags":[]},
-          {"id":"d095","name":"老北京打卤面","cat":"staple","emoji":"🍜","note":"","ingredients":"","tags":[]},
-          {"id":"d096","name":"水芹菜牛肉汤","cat":"soup","emoji":"🥣","note":"","ingredients":"","tags":[]},
-          {"id":"d097","name":"排骨山药玉米汤","cat":"soup","emoji":"🥘","note":"","ingredients":"","tags":[]}
-        ];
+        const SEED_DISHES = [];  // 菜库已加密存放在 data.json，内嵌明文已移除
 
         // ===== 通用 CDN 回退请求（带超时）=====
         async function fetchWithCdnFallback(filename, timeoutMs) {
@@ -1287,6 +1253,7 @@
 
         async function syncFromServer(showMsg) {
             if (syncing) return;
+            if (!cryptoKey) return;  // 未解锁不联网同步
             syncing = true;
             try {
                 const res = await fetchWithCdnFallback('data.json', 8000);
@@ -1294,7 +1261,7 @@
                     scheduleSyncRetry();  // 访问 GitHub 失败，稍后自动重试
                     return;
                 }
-                const serverDishes = await res.json();
+                const serverDishes = await decodeDataFile(await res.text());
                 resetSyncRetry();  // 拉取成功，重试计时归零
                 if (!Array.isArray(serverDishes) || serverDishes.length === 0) return;
 
@@ -1739,11 +1706,11 @@
                 const res = await fetch(url, { headers: apiHeaders });
                 if (!res.ok) return;
                 const file = await res.json();
-                const content = JSON.parse(base64Decode(file.content));
+                const content = await decodeDataFile(base64Decode(file.content));
                 const idx = content.findIndex(d => d.id === id);
                 if (idx < 0) return;
                 content.splice(idx, 1);
-                const newContent = JSON.stringify(content, null, 2) + '\n';
+                const newContent = await encodeDataFile(content);
                 await fetch(url, {
                     method: 'PUT',
                     headers: { ...apiHeaders, 'Content-Type': 'application/json' },
@@ -1953,6 +1920,123 @@
             return new TextDecoder().decode(bytes);
         }
 
+        // ===== 菜库加解密（data.json 里存的是密文，密码错了解不开）=====
+        let cryptoKey = null;      // 当前会话的解密密钥
+        let encSaltB64 = '';       // 派生参数（随菜库一起存在 data.json）
+        let encIter = ENC_ITER;
+
+        function b64ToBytes(b64) {
+            const bin = atob(b64);
+            return Uint8Array.from(bin, c => c.charCodeAt(0));
+        }
+
+        function bytesToB64(bytes) {
+            return btoa(Array.from(bytes, b => String.fromCharCode(b)).join(''));
+        }
+
+        async function deriveAesKey(password, saltBytes, iterations) {
+            const baseKey = await crypto.subtle.importKey(
+                'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']
+            );
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: saltBytes, iterations: iterations, hash: 'SHA-256' },
+                baseKey, { name: 'AES-GCM', length: 256 }, false, ['decrypt', 'encrypt']
+            );
+        }
+
+        // 解析 data.json 内容 → 菜品数组（兼容历史遗留的明文数组）
+        async function decodeDataFile(text) {
+            const parsed = JSON.parse(text);
+            if (Array.isArray(parsed)) return parsed;
+            if (!parsed || parsed.fmEnc !== 1) throw new Error('数据格式异常');
+            if (!cryptoKey) throw new Error('未解锁');
+            const pt = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: b64ToBytes(parsed.iv) },
+                cryptoKey,
+                b64ToBytes(parsed.data)
+            );
+            return JSON.parse(new TextDecoder().decode(pt));
+        }
+
+        // 菜品数组 → data.json 的密文内容（每次写入换新 IV）
+        async function encodeDataFile(dishesArr) {
+            if (!cryptoKey) throw new Error('未解锁，无法写入');
+            const json = JSON.stringify(dishesArr, null, 2) + '\n';
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const ct = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv }, cryptoKey, new TextEncoder().encode(json)
+            );
+            return JSON.stringify({
+                fmEnc: 1,
+                iter: encIter,
+                salt: encSaltB64,
+                iv: bytesToB64(iv),
+                data: bytesToB64(new Uint8Array(ct))
+            }, null, 2) + '\n';
+        }
+
+        // ===== 锁屏控制 =====
+        function showLock(message) {
+            document.getElementById('lockScreen').style.display = 'flex';
+            document.getElementById('lockError').textContent = message || '';
+            document.getElementById('lockBtn').disabled = false;
+            document.getElementById('lockInput').value = '';
+            setTimeout(() => document.getElementById('lockInput').focus(), 100);
+        }
+
+        function hideLock() {
+            document.getElementById('lockScreen').style.display = 'none';
+        }
+
+        async function submitPassword() {
+            const input = document.getElementById('lockInput');
+            const btn = document.getElementById('lockBtn');
+            const errEl = document.getElementById('lockError');
+            const password = input.value;
+            if (!password) { errEl.textContent = '请输入密码'; return; }
+
+            btn.disabled = true;
+            btn.textContent = '解锁中…';
+            errEl.textContent = '';
+
+            try {
+                // 拿一份密文，salt/IV 都在里面
+                const res = await fetchWithCdnFallback('data.json', 10000);
+                if (!res || !res.ok) throw new Error('网络不可用');
+                const env = await res.json();
+                if (Array.isArray(env) || !env || env.fmEnc !== 1) throw new Error('数据格式异常');
+
+                // 密码错了这里会抛异常——这就是唯一的口令校验
+                const key = await deriveAesKey(password, b64ToBytes(env.salt), env.iter || ENC_ITER);
+                const pt = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: b64ToBytes(env.iv) }, key, b64ToBytes(env.data)
+                );
+                const serverDishes = JSON.parse(new TextDecoder().decode(pt));
+
+                cryptoKey = key;
+                encSaltB64 = env.salt;
+                encIter = env.iter || ENC_ITER;
+                localStorage.setItem(PW_KEY, password);
+                localStorage.setItem(META_KEY, JSON.stringify({ salt: encSaltB64, iter: encIter }));
+
+                // 解密成功：直接用服务器菜库覆盖本地缓存，避免渲染到旧数据
+                localStorage.setItem(STORE_KEY, JSON.stringify(
+                    serverDishes.map(d => ({ ...d, fromServer: true }))
+                ));
+
+                hideLock();
+                await startApp();
+            } catch (e) {
+                const offline = e && e.message === '网络不可用';
+                errEl.textContent = offline ? '网络不可用，请连网后重试' : '密码不对，请重试';
+                input.value = '';
+                input.focus();
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '解锁';
+            }
+        }
+
         async function syncNewDishToGitHub(name, cat, emoji, note) {
             showToast('☁️ 正在同步到服务器...');
             try {
@@ -1970,7 +2054,7 @@
                     throw new Error(err.message || 'HTTP ' + res.status);
                 }
                 const file = await res.json();
-                const content = JSON.parse(base64Decode(file.content));
+                const content = await decodeDataFile(base64Decode(file.content));
                 const sha = file.sha;
 
                 // 2. 生成新 ID
@@ -1988,7 +2072,7 @@
                 content.push(newDish);
 
                 // 4. 提交到 GitHub
-                const newContent = JSON.stringify(content, null, 2) + '\n';
+                const newContent = await encodeDataFile(content);
                 const putRes = await fetch(url, {
                     method: 'PUT',
                     headers: { ...apiHeaders, 'Content-Type': 'application/json' },
@@ -2036,7 +2120,7 @@
                     throw new Error(err.message || 'HTTP ' + res.status);
                 }
                 const file = await res.json();
-                const content = JSON.parse(base64Decode(file.content));
+                const content = await decodeDataFile(base64Decode(file.content));
                 const sha = file.sha;
 
                 // 更新对应菜品
@@ -2056,7 +2140,7 @@
                     });
                 }
 
-                const newContent = JSON.stringify(content, null, 2) + '\n';
+                const newContent = await encodeDataFile(content);
                 const putRes = await fetch(url, {
                     method: 'PUT',
                     headers: { ...apiHeaders, 'Content-Type': 'application/json' },
@@ -2190,11 +2274,43 @@
         })();
 
         // ===== Init =====
-        initData().then(() => {
+        async function startApp() {
+            await initData();
             console.log('✅ 菜单加载完成，共 ' + dishes.length + ' 道菜');
             updateSyncStatus();
+        }
+
+        // 启动：解锁过的设备直接进（可离线）；没解锁的先亮锁屏
+        async function boot() {
+            const savedPw = localStorage.getItem(PW_KEY);
+            const savedMeta = localStorage.getItem(META_KEY);
+            if (savedPw && savedMeta) {
+                try {
+                    const meta = JSON.parse(savedMeta);
+                    cryptoKey = await deriveAesKey(savedPw, b64ToBytes(meta.salt), meta.iter || ENC_ITER);
+                    encSaltB64 = meta.salt;
+                    encIter = meta.iter || ENC_ITER;
+                    hideLock();
+                    await startApp();
+                    return;
+                } catch (e) {
+                    localStorage.removeItem(PW_KEY);
+                    localStorage.removeItem(META_KEY);
+                }
+            }
+            // 未解锁：清掉本机缓存的菜库，别把菜单留在别人手机里
+            localStorage.removeItem(STORE_KEY);
+            localStorage.removeItem(WANT_KEY);
+            dishes = [];
+            showLock();
+        }
+
+        document.getElementById('lockInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') submitPassword();
         });
+
         renderEmojiPicker();
+        boot();
 
         function updateSyncStatus() {
             const sub = document.getElementById('headerSubtitle');

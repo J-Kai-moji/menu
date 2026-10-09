@@ -1,4 +1,4 @@
-const CACHE = 'family-menu-v24';
+const CACHE = 'family-menu-v25';
 const BASE = '/menu';
 const ASSETS = [
   BASE + '/',

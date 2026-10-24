@@ -69,7 +69,7 @@ git commit -m "新增素菜：葱烧豆腐…；版本号升v109，SW缓存升�
 git push origin master
 ```
 
-提交信息沿用历史格式：`新增/修改<分类>：菜名（配料：…）；版本号升vNNN，SW缓存升级vNN`。推完可开线上地址确认；界面改动建议起本地服务并渲染截图自查。
+提交信息沿用历史格式：`新增/修改<分类>：菜名（配料：…）；版本号升vNNN，SW缓存升级vNN`。推完可开线上地址确认；界面改动建议起本地服务并渲染截图自查。注意本机沙箱内 `git` 建不了 `.git/index.lock`，提交和推送要以完全权限执行（见「已知问题」）。
 
 ## 验证清单（交付前）
 
@@ -87,6 +87,7 @@ git push origin master
 
 - `.claude/settings.local.json` 里还硬编码了 `F:\cursor\菜单` 路径，属历史遗留
 - 2026-10-25 修过一次本目录的 Windows 权限：目录 ACL 缺当前用户的完全控制项，导致 DSH 沙箱起不来、所有命令直接报 `SetNamedSecurityInfoW ... grantWrite`。已补上当前用户的完全控制权限；原 ACL 备份与恢复脚本在 `F:\cursor\acl-recovery\`，要回滚就执行其中的 `.ps1`
+- 沙箱写权限只落在**工作区根目录**这一层，`.git`、`.claude` 这类改动前就存在的子目录拿不到授权。表现：沙箱内 `git commit`/`git push` 报 `Unable to create '.git/index.lock': Permission denied`、`couldn't create signal pipe`。**提交推送要用完全权限跑 git**；沙箱内新建/编辑根目录文件（`index.html`、`data.json` 等）正常
 
 ## 工作区与备份
 

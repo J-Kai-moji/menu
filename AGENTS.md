@@ -86,9 +86,10 @@ git push origin master
 ## 已知问题 / 可选题
 
 - `.claude/settings.local.json` 里还硬编码了 `F:\cursor\菜单` 路径，属历史遗留
+- 2026-10-25 修过一次本目录的 Windows 权限：目录 ACL 缺当前用户的完全控制项，导致 DSH 沙箱起不来、所有命令直接报 `SetNamedSecurityInfoW ... grantWrite`。已补上当前用户的完全控制权限；原 ACL 备份与恢复脚本在 `F:\cursor\acl-recovery\`，要回滚就执行其中的 `.ps1`
 
 ## 工作区与备份
 
-- **主工作区**：`D:\deepseek\家庭菜单`（本仓库，DSH 唯一可写位置）
-- **备份**：`F:\cursor\菜单` 是迁移前的原件，**只读参考，不要再在 F 盘改**；两边不会自动同步
-- 若需改 F 盘需单独授权完全权限，一般不必要
+- **唯一工作区**：`F:\cursor\菜单`，就是本仓库（含 `.git`），与 `origin/master` 同步。直接在这里改、从这里提交推送
+- **不存在第二份副本**：`D:\deepseek` 是 DeepSeek Harness 的安装目录，其中 `D:\deepseek\家庭菜单` 只是一个空文件夹，不是仓库，不要往那里搬东西（旧版本本文写成"主工作区"属误记，2026-10-25 已更正）
+- 历史版本的安全性完全靠 git 提交 + GitHub 远程，改之前照上图流程走即可

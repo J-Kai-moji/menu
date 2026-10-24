@@ -4294,5 +4294,27 @@
       "B站"
     ],
     "ingredients": "青花鱼、昆布高汤"
+  },
+  {
+    "id": "d526",
+    "name": "凉拌西洋菜",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": [
+      "凉菜"
+    ],
+    "ingredients": "西洋菜、蒜"
+  },
+  {
+    "id": "d527",
+    "name": "油盐蒸黄脚立",
+    "cat": "meat",
+    "emoji": "🐟",
+    "note": "",
+    "tags": [
+      "海鲜"
+    ],
+    "ingredients": "黄脚立、姜、葱"
   }
 ]

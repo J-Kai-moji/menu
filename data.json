@@ -4315,5 +4315,31 @@
     "tags": [
       "海鲜"
     ]
+  },
+  {
+    "id": "d528",
+    "name": "葱烧豆腐",
+    "cat": "veggie",
+    "emoji": "🧈",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d529",
+    "name": "茼蒿豆腐",
+    "cat": "veggie",
+    "emoji": "🥬",
+    "note": "",
+    "tags": []
+  },
+  {
+    "id": "d530",
+    "name": "拍黄瓜",
+    "cat": "veggie",
+    "emoji": "🥒",
+    "note": "",
+    "tags": [
+      "凉菜"
+    ]
   }
 ]

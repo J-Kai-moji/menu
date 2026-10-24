@@ -79,7 +79,6 @@ git push origin master
 
 ## 已知问题 / 可选题
 
-- `README.md` 只写了「三大分类」，实际是五个（含主食、饮品），文档滞后
 - `ingredients` 覆盖率低（47/499），补全配料是长期可做的活
 - `.claude/settings.local.json` 里还硬编码了 `F:\cursor\菜单` 路径，属历史遗留
 

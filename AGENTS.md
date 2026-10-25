@@ -39,13 +39,13 @@
 - `ingredients`（配料，顿号分隔）由用户手工按需补，**不要求每道菜都有**；AI 不要批量生成或自动填充
 - `note`（备注）同样可为空
 
-现状（2026-10-25）：499 道，荤 209 / 素 123 / 主食 91 / 汤 72 / 饮品 4；id 范围 d001–d530，有 31 个空号；`ingredients` 已填 47/499（手工补，非必填）。
+现状（2026-10-25）：496 道，荤 209 / 素 121 / 主食 91 / 汤 71 / 饮品 4；id 范围 d001–d530，有 34 个空号；`ingredients` 已填 47/496（手工补，非必填）。
 
 ## 关键机制（改之前必须懂）
 
 1. **混合架构**：`data.json` 是官方菜库；`localStorage` 存家人自己加的菜、想吃标记、今日菜单本地副本。`syncFromServer()` 每次启动/切回前台拉 `data.json`，**服务端为准**：会清理 id 以 `d` 开头但服务器已不存在的菜，因此删除只需从 `data.json` 移除。
 2. **内嵌种子数据** `SEED_DISHES`（`index.html:1152` 起）只是首次离线兜底，**无需随菜品更新**，不要手动维护。
-3. **版本号**：`APP_VERSION`（`index.html:959`）变化时清空本地菜品缓存强制重拉（Token 与今日菜单保留）。历史约定：**每次发版同时升 `APP_VERSION` 和 `sw.js:1` 的 `CACHE` 版本**（如 v111 / family-menu-v31）。纯加菜由应用内路径完成时不升版本，靠 network-first 生效。
+3. **版本号**：`APP_VERSION`（`index.html:959`）变化时清空本地菜品缓存强制重拉（Token 与今日菜单保留）。历史约定：**每次发版同时升 `APP_VERSION` 和 `sw.js:1` 的 `CACHE` 版本**（如 v112 / family-menu-v32）。纯加菜由应用内路径完成时不升版本，靠 network-first 生效。
 4. **管理员 Token**：应用内写 GitHub 需要 Personal Access Token（Fine-grained → `J-Kai-moji/menu` → Contents 读写），存在 `localStorage['fm_gh_token']`。入口是**长按页面大标题 3 秒**（`index.html:2124` 附近的 `.header` 长按监听，触发 `promptToken()`），无 Token 时今日菜单仅本机可见。
 5. **今日菜单云同步**：任何设备加/删菜都 `PUT today.json`（`pushTodayOp`，op 类型 `set`/`add`/`remove`/`clear`，409 冲突重试 3 次）；其他设备轮询（有 Token 10s、无 Token 30s，均带 ETag 避免限流）。
 6. **CDN 回退**：`fetchWithCdnFallback()` 逐个尝试 raw/CDN 地址，GitHub 被墙时仍能读；失败按 30s→5min 退避重试。

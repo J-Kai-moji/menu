@@ -846,7 +846,9 @@
     "cat": "veggie",
     "emoji": "🫘",
     "note": "",
-    "tags": []
+    "tags": [
+      "凉菜"
+    ]
   },
   {
     "id": "d113",
@@ -951,16 +953,6 @@
     "emoji": "🥔",
     "note": "",
     "tags": []
-  },
-  {
-    "id": "d125",
-    "name": "凉拌干豆腐丝",
-    "cat": "veggie",
-    "emoji": "🫘",
-    "note": "",
-    "tags": [
-      "凉菜"
-    ]
   },
   {
     "id": "d126",
@@ -3590,14 +3582,6 @@
     "tags": []
   },
   {
-    "id": "d439",
-    "name": "上汤萝卜菜",
-    "cat": "veggie",
-    "emoji": "🥬",
-    "note": "",
-    "tags": []
-  },
-  {
     "id": "d440",
     "name": "地三鲜",
     "cat": "veggie",
@@ -3639,14 +3623,6 @@
     "name": "毛豆烧茄子",
     "cat": "veggie",
     "emoji": "🍆",
-    "note": "",
-    "tags": []
-  },
-  {
-    "id": "d445",
-    "name": "砂锅肉丸",
-    "cat": "soup",
-    "emoji": "🍲",
     "note": "",
     "tags": []
   },

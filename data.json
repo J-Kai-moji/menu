@@ -1177,14 +1177,6 @@
     "tags": []
   },
   {
-    "id": "d153",
-    "name": "酱油豆腐",
-    "cat": "veggie",
-    "emoji": "🧈",
-    "note": "",
-    "tags": []
-  },
-  {
     "id": "d154",
     "name": "炸蘑菇",
     "cat": "veggie",
@@ -4212,16 +4204,6 @@
     "emoji": "🍲",
     "note": "",
     "tags": []
-  },
-  {
-    "id": "d518",
-    "name": "杂鱼汤",
-    "cat": "soup",
-    "emoji": "🐟",
-    "note": "",
-    "tags": [
-      "海鲜"
-    ]
   },
   {
     "id": "d519",

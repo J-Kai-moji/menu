@@ -4241,7 +4241,9 @@
     "cat": "staple",
     "emoji": "🍜",
     "note": "",
-    "tags": [],
+    "tags": [
+      "B站"
+    ],
     "ingredients": "猪油、西红柿、蘑菇、青菜、瘦肉、豆腐"
   },
   {

@@ -4335,5 +4335,23 @@
     "emoji": "🥓",
     "note": "",
     "tags": []
+  },
+  {
+    "id": "d533",
+    "name": "黄豆芽拌饭",
+    "cat": "staple",
+    "emoji": "🍚",
+    "note": "",
+    "tags": [],
+    "ingredients": "黄豆芽、红绿辣椒、粗辣椒面"
+  },
+  {
+    "id": "d534",
+    "name": "石锅豆腐",
+    "cat": "veggie",
+    "emoji": "🍲",
+    "note": "",
+    "tags": [],
+    "ingredients": "老豆腐、黄豆酱、杂菜"
   }
 ]

@@ -30,9 +30,9 @@
             --staple: #e67e22;
             --staple-light: #fdf2e9;
             --staple-bg: #fffaf5;
-            --drink: #3498db;
-            --drink-light: #eaf4fd;
-            --drink-bg: #f5fafe;
+            --dessert: #3498db;
+            --dessert-light: #eaf4fd;
+            --dessert-bg: #f5fafe;
             --bg: #f8f6f2;
             --card: #ffffff;
             --text: #2c3e50;
@@ -112,7 +112,7 @@
         .tab.active[data-cat="veggie"] { background: var(--veggie); }
         .tab.active[data-cat="soup"] { background: var(--soup); }
         .tab.active[data-cat="staple"] { background: var(--staple); }
-        .tab.active[data-cat="drink"] { background: var(--drink); }
+        .tab.active[data-cat="dessert"] { background: var(--dessert); }
         .tab .count {
             display: inline-block;
             background: rgba(0,0,0,0.1);
@@ -212,7 +212,7 @@
         .dish-card.veggie { border-left-color: var(--veggie); }
         .dish-card.soup { border-left-color: var(--soup); }
         .dish-card.staple { border-left-color: var(--staple); }
-        .dish-card.drink { border-left-color: var(--drink); }
+        .dish-card.dessert { border-left-color: var(--dessert); }
 
         .dish-emoji {
             font-size: 28px;
@@ -228,7 +228,7 @@
         .dish-card.veggie .dish-emoji { background: var(--veggie-light); }
         .dish-card.soup .dish-emoji { background: var(--soup-light); }
         .dish-card.staple .dish-emoji { background: var(--staple-light); }
-        .dish-card.drink .dish-emoji { background: var(--drink-light); }
+        .dish-card.dessert .dish-emoji { background: var(--dessert-light); }
 
         .dish-info { flex: 1; min-width: 0; }
         .dish-name {
@@ -416,10 +416,10 @@
             background: var(--staple-bg);
             color: var(--staple);
         }
-        .cat-option.selected[data-cat="drink"] {
-            border-color: var(--drink);
-            background: var(--drink-bg);
-            color: var(--drink);
+        .cat-option.selected[data-cat="dessert"] {
+            border-color: var(--dessert);
+            background: var(--dessert-bg);
+            color: var(--dessert);
         }
 
         .emoji-picker {
@@ -611,7 +611,7 @@
         .view-cat.veggie { background: var(--veggie-light); color: var(--veggie); }
         .view-cat.soup { background: var(--soup-light); color: var(--soup); }
         .view-cat.staple { background: var(--staple-light); color: var(--staple); }
-        .view-cat.drink { background: var(--drink-light); color: var(--drink); }
+        .view-cat.dessert { background: var(--dessert-light); color: var(--dessert); }
         .view-note {
             background: #fafaf8;
             border-radius: var(--radius-sm);
@@ -836,8 +836,8 @@
         <div class="tab" data-cat="staple" onclick="switchTab('staple')">
             🍚 主食 <span class="count" id="countStaple">0</span>
         </div>
-        <div class="tab" data-cat="drink" onclick="switchTab('drink')">
-            🥤 饮品 <span class="count" id="countDrink">0</span>
+        <div class="tab" data-cat="dessert" onclick="switchTab('dessert')">
+            🍰 甜品 <span class="count" id="countDessert">0</span>
         </div>
     </div>
 
@@ -915,7 +915,7 @@
                     <div class="cat-option" data-cat="veggie" onclick="selectCat('veggie')">🥬 素菜</div>
                     <div class="cat-option" data-cat="soup" onclick="selectCat('soup')">🍲 汤</div>
                     <div class="cat-option" data-cat="staple" onclick="selectCat('staple')">🍚 主食</div>
-                    <div class="cat-option" data-cat="drink" onclick="selectCat('drink')">🥤 饮品</div>
+                    <div class="cat-option" data-cat="dessert" onclick="selectCat('dessert')">🍰 甜品</div>
                 </div>
             </div>
 
@@ -957,7 +957,7 @@
         // data.json → 官方菜库（由管理员维护，推送到 GitHub 自动同步）
         // localStorage → 家人自己添加的菜 + 所有"想吃"标记
 
-        const APP_VERSION = '119';  // 每次更新菜品后改这个数字，APP自动刷新数据
+        const APP_VERSION = '120';  // 每次更新菜品后改这个数字，APP自动刷新数据
 
         const STORE_KEY = 'fm_dishes_v2';
         const WANT_KEY = 'fm_wants_v2';
@@ -984,7 +984,7 @@
             veggie: ['🥬','🥒','🥦','🍅','🍆','🌶️','🧄','🧅','🥕','🌽','🍄','🫑','🥔','🫘','🥗'],
             soup: ['🍲','🥣','🫕','🍜','🥘','🍵','🫘'],
             staple: ['🍚','🍜','🍝','🥟','🍞','🥖','🍠','🌽','🥐','🫓','🍙','🍘'],
-            drink: ['🥤','🧃','🧋','☕','🍵','🫖','🥛','🍺','🍷','🍹','🍸','🧉']
+            dessert: ['🍰','🎂','🧁','🍮','🍨','🍧','🍩','🥧','🍦','🥤','🧃','🧋','☕','🍵','🫖','🥛']
         };
 
         let dishes = [];
@@ -1494,7 +1494,7 @@
             document.getElementById('countVeggie').textContent = dishes.filter(d => d.cat === 'veggie').length;
             document.getElementById('countSoup').textContent = dishes.filter(d => d.cat === 'soup').length;
             document.getElementById('countStaple').textContent = dishes.filter(d => d.cat === 'staple').length;
-            document.getElementById('countDrink').textContent = dishes.filter(d => d.cat === 'drink').length;
+            document.getElementById('countDessert').textContent = dishes.filter(d => d.cat === 'dessert').length;
 
             document.querySelectorAll('.tab').forEach(t => {
                 t.classList.toggle('active', t.dataset.cat === currentTab);
@@ -1541,7 +1541,7 @@
         }
 
         function defaultEmojiForCat(cat) {
-            return { meat: '🥩', veggie: '🥬', soup: '🍲', staple: '🍚' }[cat] || '🍽️';
+            return { meat: '🥩', veggie: '🥬', soup: '🍲', staple: '🍚', dessert: '🍰' }[cat] || '🍽️';
         }
 
         function escHtml(s) {
@@ -1588,7 +1588,7 @@
             const old = document.getElementById('pickOverlay');
             if (old) old.remove();
 
-            const catLabel = { meat: '🥩 荤菜', veggie: '🥬 素菜', soup: '🍲 汤', staple: '🍚 主食', drink: '🥤 饮品' }[dish.cat] || '';
+            const catLabel = { meat: '🥩 荤菜', veggie: '🥬 素菜', soup: '🍲 汤', staple: '🍚 主食', dessert: '🍰 甜品' }[dish.cat] || '';
             const overlay = document.createElement('div');
             overlay.id = 'pickOverlay';
             overlay.className = 'pick-overlay';
@@ -1778,7 +1778,7 @@
             }
 
             // Category
-            const catLabels = { meat: '🥩 荤菜', veggie: '🥬 素菜', soup: '🍲 汤', staple: '🍚 主食', drink: '🥤 饮品' };
+            const catLabels = { meat: '🥩 荤菜', veggie: '🥬 素菜', soup: '🍲 汤', staple: '🍚 主食', dessert: '🍰 甜品' };
             const catEl = document.getElementById('viewCat');
             catEl.textContent = catLabels[dish.cat] || '';
             catEl.className = 'view-cat ' + dish.cat;

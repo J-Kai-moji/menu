@@ -3820,7 +3820,7 @@
   {
     "id": "d470",
     "name": "荔枝冰饮",
-    "cat": "drink",
+    "cat": "dessert",
     "emoji": "🧃",
     "note": "",
     "tags": []
@@ -3912,7 +3912,7 @@
   {
     "id": "d484",
     "name": "大米冰淇淋",
-    "cat": "drink",
+    "cat": "dessert",
     "emoji": "🍦",
     "note": "",
     "tags": []
@@ -4122,7 +4122,7 @@
   {
     "id": "d508",
     "name": "马蹄饮",
-    "cat": "drink",
+    "cat": "dessert",
     "emoji": "🧃",
     "note": "",
     "tags": []
@@ -4130,7 +4130,7 @@
   {
     "id": "d509",
     "name": "苹果茶",
-    "cat": "drink",
+    "cat": "dessert",
     "emoji": "🍎",
     "note": "",
     "tags": []
@@ -4357,7 +4357,7 @@
   {
     "id": "d535",
     "name": "电饭煲蛋糕",
-    "cat": "staple",
+    "cat": "dessert",
     "emoji": "🍰",
     "note": "",
     "tags": [],
